@@ -1,0 +1,48 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: filsrougeMysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: Alfmabrok
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3305:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - laravel_network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadminAlfmabrok
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "8088:80"
+    networks:
+      - laravel_network
+
+  php:
+    build:
+      context: .
+      dockerfile: Docker/Dockerfile
+    container_name: Alfmabrok
+    restart: always 
+    volumes:
+      - ./project:/var/www/html
+    ports:
+      - "8000:80"
+    depends_on:
+      - mysql
+    networks:
+      - laravel_network
+
+
+volumes:
+  mysql_data:
+networks:
+  laravel_network:
