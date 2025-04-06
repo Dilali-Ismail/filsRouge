@@ -2,8 +2,10 @@
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -20,12 +22,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
-// Routes temporaires pour la démo
-Route::get('/planning', function () {
-    return view('coming-soon');
-});
 
 Route::get('/services', function () {
     return view('coming-soon');
@@ -45,17 +43,64 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
+
 // Routes de vérification d'email
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
+Route::get('/email/verify', [VerificationController::class, 'notice'])
+    ->middleware('auth')
+    ->name('verification.notice');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect()->route('login')->with('success', 'Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->middleware(['auth', 'signed'])
+    ->name('verification.verify');
 
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('success', 'Un nouveau lien de vérification a été envoyé à votre adresse e-mail.');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('verification.send');
+
+
+
+// Routes pour les mariées
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/planning', function () {
+        // Vérifier si l'utilisateur est une mariée
+        if (!Auth::user()->isMariee()) {
+            return redirect()->route('welcome')->with('error', 'Accès non autorisé.');
+        }
+
+        return view('planning');
+    })->name('planning');
+    Route::get('/profil-mariee', function () {
+        return view('mariee.profile');
+    })->name('mariee.profile');
+
+    Route::get('/messagerie', function () {
+        return view('messagerie');
+    })->name('messagerie');
+});
+
+// Routes pour les traiteurs
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profil-traiteur', function () {
+        return view('traiteur.profile');
+    })->name('traiteur.profile');
+
+    Route::get('/gerer-services', function () {
+        return view('traiteur.services');
+    })->name('traiteur.services');
+
+    Route::get('/reservations', function () {
+        return view('traiteur.reservations');
+    })->name('traiteur.reservations');
+
+    Route::get('/messagerie', function () {
+        return view('messagerie');
+    })->name('messagerie');
+});
+
+// Route pour l'admin dashboard
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+});

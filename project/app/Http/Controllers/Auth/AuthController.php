@@ -52,13 +52,12 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'groom_name' => $request->groom_name,
                 'bride_name' => $request->bride_name,
-                'phone_number' => $request->phone_number,
                 'city' => $request->city,
             ]);
         } elseif ($role->name === 'traiteur') {
             $request->validate([
                 'manager_name' => 'required|string|max:255',
-                'registration_number' => 'required|string|max:255|unique:caterers',
+                'registration_number' => 'required|string|max:255|unique:traiteurs',
                 'phone_number' => 'required|string|max:20',
                 'city' => 'required|string|max:255',
             ]);
@@ -72,9 +71,12 @@ class AuthController extends Controller
                 'is_verified' => false,
             ]);
         }
+        Auth::login($user);
 
         // Envoie l'événement pour la vérification d'email
         event(new Registered($user));
+
+
 
         // Redirection vers la page de vérification d'email
         return redirect()->route('verification.notice')
@@ -88,51 +90,50 @@ class AuthController extends Controller
 
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // Tentative de connexion
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
+    // Tentative de connexion
+    if (Auth::attempt($credentials, $request->filled('remember'))) {
+        $request->session()->regenerate();
 
-            // Vérification si l'email est vérifié
-            if (!Auth::user()->hasVerifiedEmail()) {
+        // Vérification si l'email est vérifié
+        if (!Auth::user()->hasVerifiedEmail()) {
+            Auth::logout();
+
+            return redirect()->route('login')
+                ->with('error', 'Vous devez vérifier votre adresse email avant de vous connecter.');
+        }
+
+        // Redirection selon le rôle (uniquement pour l'admin)
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->isTraiteur()) {
+            // Vérification si le traiteur est vérifié par l'admin
+            if (!$user->traiteur->is_verified) {
                 Auth::logout();
 
                 return redirect()->route('login')
-                    ->with('error', 'Vous devez vérifier votre adresse email avant de vous connecter.');
-            }
-
-            // Redirection selon le rôle
-            $user = Auth::user();
-
-            if ($user->isAdmin()) {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->isMariee()) {
-                return redirect()->route('mariee.dashboard');
-            } elseif ($user->isTraiteur()) {
-                // Vérification si le traiteur est vérifié par l'admin
-                if (!$user->traiteur->is_verified) {
-                    Auth::logout();
-
-                    return redirect()->route('login')
-                        ->with('error', 'Votre compte traiteur est en attente de validation par l\'administrateur.');
-                }
-
-                return redirect()->route('traiteur.dashboard');
+                    ->with('error', 'Votre compte traiteur est en attente de validation par l\'administrateur.');
             }
         }
 
-        // Échec de la connexion
-        return back()->withErrors([
-            'email' => 'Les informations d\'identification fournies ne correspondent pas à nos enregistrements.',
-        ])->withInput($request->except('password'));
+        // Pour les mariées et traiteurs vérifiés, redirection vers la page d'accueil
+        return redirect()->route('welcome');
     }
 
-    
+    // Échec de la connexion
+    return back()->withErrors([
+        'email' => 'Les informations d\'identification fournies ne correspondent pas à nos enregistrements.',
+    ])->withInput($request->except('password'));
+}
+
+
     public function logout(Request $request)
     {
         Auth::logout();

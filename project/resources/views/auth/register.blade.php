@@ -99,15 +99,7 @@
                                     @enderror
                                 </div>
 
-                                <div>
-                                    <label for="phone_number" class="block text-sm font-medium text-[#333333] mb-2">Numéro de téléphone</label>
-                                    <input id="phone_number" type="text" name="phone_number" value="{{ old('phone_number') }}"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]">
-
-                                    @error('phone_number')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                
 
                                 <div>
                                     <label for="city" class="block text-sm font-medium text-[#333333] mb-2">Ville</label>

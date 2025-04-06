@@ -51,23 +51,69 @@
                 </div>
 
                 <!-- Liens de navigation au centre -->
-                <div class="hidden md:flex items-center justify-center flex-1">
-                    <a href="{{ url('/') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Accueil</a>
-                    <a href="{{ url('/planning') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Planning</a>
-                    <a href="{{ url('/services') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Services</a>
-                    <a href="{{ url('/about') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">À propos</a>
-                    <a href="{{ url('/contact') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Contact</a>
-                </div>
+                <!-- Liens de navigation au centre -->
+<div class="hidden md:flex items-center justify-center flex-1">
+    <!-- Lien Accueil pour tous -->
+    <a href="{{ url('/') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Accueil</a>
 
-                <!-- Boutons Login/Register à droite (modernisés) -->
+    @guest
+        <!-- Liens pour visiteurs (non connectés) -->
+        <a href="{{ url('/services') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Services</a>
+        <a href="{{ url('/about') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">À propos</a>
+        <a href="{{ url('/contact') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Contact</a>
+    @else
+        @if(Auth::user()->isMariee())
+            <!-- Liens pour les mariées -->
+            <a href="{{ url('/planning') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Planning</a>
+            <a href="{{ url('/services') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Services</a>
+            <a href="{{ url('/about') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">À propos</a>
+            <a href="{{ url('/contact') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Contact</a>
+            <a href="{{ url('/messagerie') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Messagerie</a>
+        @elseif(Auth::user()->isTraiteur())
+            <!-- Liens pour les traiteurs -->
+            <a href="{{ url('/services') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Services</a>
+            <a href="{{ url('/gerer-services') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Gérer services</a>
+            <a href="{{ url('/messagerie') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Messagerie</a>
+            <a href="{{ url('/reservations') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Réservations</a>
+        @elseif(Auth::user()->isAdmin())
+            <!-- Liens pour les admins -->
+            <a href="{{ url('/admin/dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-[#C08081]">Dashboard</a>
+        @endif
+    @endguest
+</div>
+
+                <!-- Boutons à droite -->
                 <div class="hidden md:flex items-center">
-                    <a href="{{ url('/login') }}" class="px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors duration-300 border border-transparent hover:border-indigo-200 rounded-lg">Se connecter</a>
-                    <a href="{{ url('/register') }}" class="ml-3 px-4 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">S'inscrire</a>
+                    @guest
+                        <!-- Boutons pour les visiteurs (non connectés) -->
+                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-[#333333] hover:text-[#C08081] transition-colors duration-300 border border-transparent hover:border-[#FADADD] rounded-lg">Se connecter</a>
+                        <a href="{{ route('register') }}" class="ml-3 px-4 py-2 rounded-lg text-sm font-medium text-[#333333] bg-[#FADADD] hover:bg-[#C08081] hover:text-white transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">S'inscrire</a>
+                    @else
+                        <!-- Profil et déconnexion pour les utilisateurs connectés -->
+                        <div class="relative ml-3 flex items-center">
+                            @if(Auth::user()->isMariee() || Auth::user()->isTraiteur())
+                                <!-- Icône de profil pour mariées et traiteurs -->
+                                <a href="{{ Auth::user()->isMariee() ? url('/profil-mariee') : url('/profil-traiteur') }}" class="mr-4 text-gray-700 hover:text-[#C08081]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </a>
+                            @endif
+
+                            <!-- Bouton de déconnexion -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 rounded-lg text-sm font-medium text-[#333333] bg-gray-100 hover:bg-[#FADADD] transition duration-300">
+                                    Déconnexion
+                                </button>
+                            </form>
+                        </div>
+                    @endguest
                 </div>
 
                 <!-- Menu mobile (hamburger) -->
                 <div class="flex md:hidden">
-                    <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-expanded="false">
+                    <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-[#C08081] hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FADADD]" aria-expanded="false">
                         <span class="sr-only">Ouvrir le menu</span>
                         <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -77,23 +123,46 @@
             </div>
 
             <!-- Menu mobile (caché par défaut) -->
-            <div class="mobile-menu hidden md:hidden">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="{{ url('/') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Accueil</a>
-                    <a href="{{ url('/planning') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Planning</a>
-                    <a href="{{ url('/services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Services</a>
-                    <a href="{{ url('/about') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">À propos</a>
-                    <a href="{{ url('/contact') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Contact</a>
-                </div>
-                <div class="pt-4 pb-3 border-t border-gray-200">
-                    <div class="flex items-center px-5">
-                        <a href="{{ url('/login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-600 hover:text-indigo-800">Se connecter</a>
-                        <a href="{{ url('/register') }}" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600">S'inscrire</a>
-                    </div>
-                </div>
-            </div>
+           <!-- Menu mobile (caché par défaut) -->
+<div class="mobile-menu hidden md:hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <!-- Lien Accueil pour tous -->
+        <a href="{{ url('/') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Accueil</a>
+
+        @guest
+            <!-- Liens pour visiteurs (non connectés) sur mobile -->
+            <a href="{{ url('/services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Services</a>
+            <a href="{{ url('/about') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">À propos</a>
+            <a href="{{ url('/contact') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Contact</a>
+        @else
+            @if(Auth::user()->isMariee())
+                <!-- Liens pour les mariées sur mobile -->
+                <a href="{{ url('/planning') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Planning</a>
+                <a href="{{ url('/services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Services</a>
+                <a href="{{ url('/about') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">À propos</a>
+                <a href="{{ url('/contact') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Contact</a>
+                <a href="{{ url('/messagerie') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Messagerie</a>
+                <a href="{{ url('/profil-mariee') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Profil</a>
+            @elseif(Auth::user()->isTraiteur())
+                <!-- Liens pour les traiteurs sur mobile -->
+                <a href="{{ url('/services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Services</a>
+                <a href="{{ url('/gerer-services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Gérer services</a>
+                <a href="{{ url('/messagerie') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Messagerie</a>
+                <a href="{{ url('/reservations') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Réservations</a>
+                <a href="{{ url('/profil-traiteur') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Profil</a>
+            @elseif(Auth::user()->isAdmin())
+                <!-- Liens pour les admins sur mobile -->
+                <a href="{{ url('/admin/dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-[#333333] hover:text-[#C08081] hover:bg-[#FAF9F6]">Dashboard</a>
+            @endif
+        @endguest
+    </div>
+
+    <!-- Le reste du code reste inchangé -->
+</div>
         </div>
     </nav>
+
+
 
     <!-- Contenu principal -->
     <main class="flex-grow">
@@ -153,8 +222,8 @@
     </footer>
 
     <!-- Scripts -->
-    <script>
-        // Script pour le menu mobile (hamburger)
+     <!-- Script pour le menu mobile -->
+     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuButton = document.querySelector('.mobile-menu-button');
             const mobileMenu = document.querySelector('.mobile-menu');
