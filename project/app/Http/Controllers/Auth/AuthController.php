@@ -62,6 +62,8 @@ class AuthController extends Controller
                 'city' => 'required|string|max:255',
             ]);
 
+           
+
             Traiteur::create([
                 'user_id' => $user->id,
                 'manager_name' => $request->manager_name,

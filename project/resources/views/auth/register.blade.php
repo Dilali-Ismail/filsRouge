@@ -99,7 +99,7 @@
                                     @enderror
                                 </div>
 
-                                
+
 
                                 <div>
                                     <label for="city" class="block text-sm font-medium text-[#333333] mb-2">Ville</label>
@@ -149,21 +149,21 @@
                                 </div>
 
                                 <div>
-                                    <label for="caterer_phone" class="block text-sm font-medium text-[#333333] mb-2">Numéro de téléphone</label>
-                                    <input id="caterer_phone" type="text" name="caterer_phone" value="{{ old('caterer_phone') }}"
+                                    <label for="phone_number" class="block text-sm font-medium text-[#333333] mb-2">Numéro de téléphone</label>
+                                    <input id="phone_number" type="text" name="phone_number" value="{{ old('phone_number') }}"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]">
 
-                                    @error('caterer_phone')
+                                    @error('phone_number')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <label for="caterer_city" class="block text-sm font-medium text-[#333333] mb-2">Ville</label>
-                                    <input id="caterer_city" type="text" name="caterer_city" value="{{ old('caterer_city') }}"
+                                    <label for="city" class="block text-sm font-medium text-[#333333] mb-2">Ville</label>
+                                    <input id="city" type="text" name="city" value="{{ old('city') }}"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]">
 
-                                    @error('caterer_city')
+                                    @error('city')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
