@@ -2,9 +2,11 @@
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\TraiteurMenuController;
 use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -103,4 +105,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+});
+
+
+// Routes pour la gestion des services par les traiteurs
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Route principale pour la gestion des services
+    Route::get('/traiteur/gerer-services', function() {
+        // Récupère toutes les catégories de services
+        $categories = DB::table('service_categories')->get();
+
+        // Par défaut, on affiche une page d'accueil générale
+        return view('traiteur.gerer_services', [
+            'activeTab' => 'accueil',
+            'categories' => $categories,
+            'contentView' => view('traiteur.services.accueil')->render()
+        ]);
+    })->name('traiteur.gerer-services');
+
+    // Routes pour le service Menu
+    Route::get('/traiteur/services/menu', [TraiteurMenuController::class, 'index'])->name('traiteur.services.menu.index');
+    Route::get('/traiteur/services/menu/create', [TraiteurMenuController::class, 'create'])->name('traiteur.menus.create');
+    Route::post('/traiteur/services/menu', [TraiteurMenuController::class, 'store'])->name('traiteur.menus.store');
+    Route::get('/traiteur/services/menu/{menu}', [TraiteurMenuController::class, 'show'])->name('traiteur.menus.show');
+    Route::get('/traiteur/services/menu/{menu}/edit', [TraiteurMenuController::class, 'edit'])->name('traiteur.menus.edit');
+    Route::put('/traiteur/services/menu/{menu}', [TraiteurMenuController::class, 'update'])->name('traiteur.menus.update');
+    Route::delete('/traiteur/services/menu/{menu}', [TraiteurMenuController::class, 'destroy'])->name('traiteur.menus.destroy');
+
+    // Routes pour les items de menu
+    Route::get('/traiteur/services/menu/{menu}/items/create', [TraiteurMenuController::class, 'createMenuItem'])->name('traiteur.menus.items.create');
+    Route::post('/traiteur/services/menu/{menu}/items', [TraiteurMenuController::class, 'storeMenuItem'])->name('traiteur.menus.items.store');
+    Route::get('/traiteur/services/menu/{menu}/items/{item}/edit', [TraiteurMenuController::class, 'editMenuItem'])->name('traiteur.menus.items.edit');
+    Route::put('/traiteur/services/menu/{menu}/items/{item}', [TraiteurMenuController::class, 'updateMenuItem'])->name('traiteur.menus.items.update');
+    Route::delete('/traiteur/services/menu/{menu}/items/{item}', [TraiteurMenuController::class, 'destroyMenuItem'])->name('traiteur.menus.items.destroy');
+
+    // Vous ajouterez des routes similaires pour les autres types de services
 });

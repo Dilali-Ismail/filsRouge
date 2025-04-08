@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Traiteur;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Service extends Model
+{
+    use HasFactory;
+
+
+    protected $fillable = [
+        'traiteur_id',
+        'category_id',
+        'title',
+        'description',
+    ];
+
+
+    public function traiteur()
+    {
+        return $this->belongsTo(Traiteur::class);
+    }
+
+
+    public function category()
+    {
+        return $this->belongsTo(ServiceCategory::class, 'category_id');
+    }
+
+   
+    public function menuItems()
+    {
+        return $this->hasMany(MenuItem::class);
+    }
+}
