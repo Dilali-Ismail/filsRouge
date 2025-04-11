@@ -13,7 +13,7 @@
                 <h2 class="text-xl font-semibold text-[#333333] mb-4">Catégories de services</h2>
                 <nav class="space-y-1">
                     @foreach($categories as $category)
-                    <a href="{{ route('traiteur.services.' . $category->name . '.index') }}"
+                    <a href="{{ $category->name == 'menu' ? route('traiteur.services.menu.index') : '#' }}"
                        class="block px-4 py-2 rounded-lg transition-colors duration-200
                               {{ $activeTab == $category->name ? 'bg-[#FADADD] text-[#333333]' : 'text-gray-600 hover:bg-gray-100' }}"
                        data-category="{{ $category->name }}">
@@ -40,6 +40,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categoryLinks.forEach(link => {
         link.addEventListener('click', function(e) {
+            // Si le lien est # (catégorie non implémentée), ne pas faire de requête AJAX
+            if (this.getAttribute('href') === '#') {
+                e.preventDefault();
+
+                // Mise à jour de la classe active
+                categoryLinks.forEach(l => l.classList.remove('bg-[#FADADD]', 'text-[#333333]'));
+                categoryLinks.forEach(l => l.classList.add('text-gray-600', 'hover:bg-gray-100'));
+                this.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                this.classList.add('bg-[#FADADD]', 'text-[#333333]');
+
+                // Afficher un message temporaire
+                contentContainer.innerHTML = `
+                    <div class="text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-600 mb-2">Fonctionnalité à venir</h3>
+                        <p class="text-gray-500 mb-6">La gestion des ${this.getAttribute('data-category')} sera bientôt disponible.</p>
+                    </div>
+                `;
+
+                return;
+            }
+
             e.preventDefault();
 
             // Mise à jour de la classe active
