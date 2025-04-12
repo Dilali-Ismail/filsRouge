@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TraiteurMenuController;
+use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -146,4 +147,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/traiteur/services/menu/{menu}/items/{item}/edit', [TraiteurMenuController::class, 'editMenuItem'])->name('traiteur.services.menu.items.edit');
     Route::put('/traiteur/services/menu/{menu}/items/{item}', [TraiteurMenuController::class, 'updateMenuItem'])->name('traiteur.services.menu.items.update');
     Route::delete('/traiteur/services/menu/{menu}/items/{item}', [TraiteurMenuController::class, 'destroyMenuItem'])->name('traiteur.services.menu.items.destroy');
+
+    // Routes pour le service Vêtements
+Route::get('/traiteur/services/vetements', [TraiteurClothingController::class, 'index'])->name('traiteur.services.vetements.index');
+Route::get('/traiteur/services/vetements/traditional', [TraiteurClothingController::class, 'showTraditional'])->name('traiteur.services.vetements.traditional');
+Route::get('/traiteur/services/vetements/modern', [TraiteurClothingController::class, 'showModern'])->name('traiteur.services.vetements.modern');
+
+// Routes pour les items de vêtements
+Route::post('/traiteur/services/vetements/{style}/items', [TraiteurClothingController::class, 'storeClothingItem'])->name('traiteur.services.vetements.items.store');
+Route::get('/traiteur/services/vetements/{style}/items/{item}/edit', [TraiteurClothingController::class, 'editClothingItem'])->name('traiteur.services.vetements.items.edit');
+Route::put('/traiteur/services/vetements/{style}/items/{item}', [TraiteurClothingController::class, 'updateClothingItem'])->name('traiteur.services.vetements.items.update');
+Route::delete('/traiteur/services/vetements/{style}/items/{item}', [TraiteurClothingController::class, 'destroyClothingItem'])->name('traiteur.services.vetements.items.destroy');
+
 });

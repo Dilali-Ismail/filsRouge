@@ -13,10 +13,11 @@
                 <h2 class="text-xl font-semibold text-[#333333] mb-4">Catégories de services</h2>
                 <nav class="space-y-1">
                     @foreach($categories as $category)
-                    <a href="{{ $category->name == 'menu' ? route('traiteur.services.menu.index') : '#' }}"
-                       class="block px-4 py-2 rounded-lg transition-colors duration-200
-                              {{ $activeTab == $category->name ? 'bg-[#FADADD] text-[#333333]' : 'text-gray-600 hover:bg-gray-100' }}"
-                       data-category="{{ $category->name }}">
+                    <a href="{{ $category->name == 'menu' ? route('traiteur.services.menu.index') :
+                            ($category->name == 'vetements' ? route('traiteur.services.vetements.index') : '#') }}"
+                    class="block px-4 py-2 rounded-lg transition-colors duration-200
+                            {{ $activeTab == $category->name ? 'bg-[#FADADD] text-[#333333]' : 'text-gray-600 hover:bg-gray-100' }}"
+                    data-category="{{ $category->name }}">
                         {{ ucfirst($category->name) }}
                     </a>
                     @endforeach

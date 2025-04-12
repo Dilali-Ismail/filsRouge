@@ -8,7 +8,7 @@
         <div class="relative bg-gray-900 overflow-hidden">
             <!-- Image de fond avec overlay, plus grande maintenant -->
             <div class="absolute inset-0 -m-8">
-                <img src="{{ asset('images/hero-wedding.jpg') }}" alt="Mariage marocain" class="w-full h-full object-cover">
+                <img src="{{ asset('images/hero-section.jpg') }}" alt="Mariage marocain" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-br from-black/60 to-black/30"></div>
             </div>
 

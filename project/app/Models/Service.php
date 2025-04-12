@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Clothing;
 use App\Models\Traiteur;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,9 +31,14 @@ class Service extends Model
         return $this->belongsTo(ServiceCategory::class, 'category_id');
     }
 
-   
+
     public function menuItems()
     {
         return $this->hasMany(MenuItem::class);
+    }
+
+    public function clothing()
+    {
+        return $this->hasMany(Clothing::class);
     }
 }

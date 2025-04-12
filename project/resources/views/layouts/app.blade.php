@@ -46,7 +46,7 @@
                 <!-- Logo à gauche -->
                 <div class="flex-shrink-0">
                     <a href="{{ url('/') }}" class="flex items-center">
-                        <img src="{{ asset('images/logo.png') }}" alt="Alf Mabrouk Logo" class="h-10 w-auto">
+                        <img src="{{ asset('images/logo.png') }}" alt="Alf Mabrouk Logo" class="h-16 w-auto">
                     </a>
                 </div>
 
