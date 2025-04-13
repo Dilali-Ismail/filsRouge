@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMakeupsTable extends Migration
+class CreatePhotographerPortfolioItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateMakeupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('makeups', function (Blueprint $table) {
+        Schema::create('photographer_portfolio_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
-            $table->string('name');
+            $table->foreignId('photographer_id')->constrained('photographers')->onDelete('cascade');
+            $table->enum('type', ['image', 'video']);
+            $table->string('file_path');
+            $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->string('photo')->nullable();
-            $table->string('experience')->nullable(); 
             $table->timestamps();
         });
     }
@@ -32,6 +31,6 @@ class CreateMakeupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('makeups');
+        Schema::dropIfExists('photographer_portfolio_items');
     }
 }

@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TraiteurMenuController;
+use App\Http\Controllers\TraiteurMakeupController;
 use App\Http\Controllers\TraiteurNegafaController;
 use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\TraiteurPhotographerController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -180,13 +182,73 @@ Route::post('/traiteur/services/negafa', [TraiteurNegafaController::class, 'stor
     Route::delete('/traiteur/services/negafa/{negafa}', [TraiteurNegafaController::class, 'destroy'])
     ->name('traiteur.services.negafa.destroy');
 
-    // Gestion du portfolio 
+    // Gestion du portfolio
     Route::get('/traiteur/services/negafa/{negafa}/portfolio/create', [TraiteurNegafaController::class, 'createPortfolioItem'])
     ->name('traiteur.services.negafa.portfolio.create');
     Route::post('/traiteur/services/negafa/{negafa}/portfolio', [TraiteurNegafaController::class, 'storePortfolioItem'])
     ->name('traiteur.services.negafa.portfolio.store');
     Route::delete('/traiteur/services/negafa/{negafa}/portfolio/{item}', [TraiteurNegafaController::class, 'destroyPortfolioItem'])
     ->name('traiteur.services.negafa.portfolio.destroy');
+});
 
+// Routes pour le service Maquillage
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des maquilleurs/maquilleuses
+    Route::get('/traiteur/services/maquillage', [TraiteurMakeupController::class, 'index'])
+        ->name('traiteur.services.maquillage.index');
 
+    // Création d'un maquilleur/maquilleuse
+    Route::get('/traiteur/services/maquillage/create', [TraiteurMakeupController::class, 'create'])
+        ->name('traiteur.services.maquillage.create');
+    Route::post('/traiteur/services/maquillage', [TraiteurMakeupController::class, 'store'])
+        ->name('traiteur.services.maquillage.store');
+
+    // Affichage, édition et suppression d'un maquilleur/maquilleuse
+    Route::get('/traiteur/services/maquillage/{makeup}', [TraiteurMakeupController::class, 'show'])
+        ->name('traiteur.services.maquillage.show');
+    Route::get('/traiteur/services/maquillage/{makeup}/edit', [TraiteurMakeupController::class, 'edit'])
+        ->name('traiteur.services.maquillage.edit');
+    Route::put('/traiteur/services/maquillage/{makeup}', [TraiteurMakeupController::class, 'update'])
+        ->name('traiteur.services.maquillage.update');
+    Route::delete('/traiteur/services/maquillage/{makeup}', [TraiteurMakeupController::class, 'destroy'])
+        ->name('traiteur.services.maquillage.destroy');
+
+    // Gestion du portfolio
+    Route::get('/traiteur/services/maquillage/{makeup}/portfolio/create', [TraiteurMakeupController::class, 'createPortfolioItem'])
+        ->name('traiteur.services.maquillage.portfolio.create');
+    Route::post('/traiteur/services/maquillage/{makeup}/portfolio', [TraiteurMakeupController::class, 'storePortfolioItem'])
+        ->name('traiteur.services.maquillage.portfolio.store');
+    Route::delete('/traiteur/services/maquillage/{makeup}/portfolio/{item}', [TraiteurMakeupController::class, 'destroyPortfolioItem'])
+        ->name('traiteur.services.maquillage.portfolio.destroy');
+});
+
+// Routes pour le service Photographe
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des photographes
+    Route::get('/traiteur/services/photographer', [TraiteurPhotographerController::class, 'index'])
+        ->name('traiteur.services.photographer.index');
+
+    // Création d'un photographe
+    Route::get('/traiteur/services/photographer/create', [TraiteurPhotographerController::class, 'create'])
+        ->name('traiteur.services.photographer.create');
+    Route::post('/traiteur/services/photographer', [TraiteurPhotographerController::class, 'store'])
+        ->name('traiteur.services.photographer.store');
+
+    // Affichage, édition et suppression d'un photographe
+    Route::get('/traiteur/services/photographer/{photographer}', [TraiteurPhotographerController::class, 'show'])
+        ->name('traiteur.services.photographer.show');
+    Route::get('/traiteur/services/photographer/{photographer}/edit', [TraiteurPhotographerController::class, 'edit'])
+        ->name('traiteur.services.photographer.edit');
+    Route::put('/traiteur/services/photographer/{photographer}', [TraiteurPhotographerController::class, 'update'])
+        ->name('traiteur.services.photographer.update');
+    Route::delete('/traiteur/services/photographer/{photographer}', [TraiteurPhotographerController::class, 'destroy'])
+        ->name('traiteur.services.photographer.destroy');
+
+    // Gestion du portfolio
+    Route::get('/traiteur/services/photographer/{photographer}/portfolio/create', [TraiteurPhotographerController::class, 'createPortfolioItem'])
+        ->name('traiteur.services.photographer.portfolio.create');
+    Route::post('/traiteur/services/photographer/{photographer}/portfolio', [TraiteurPhotographerController::class, 'storePortfolioItem'])
+        ->name('traiteur.services.photographer.portfolio.store');
+    Route::delete('/traiteur/services/photographer/{photographer}/portfolio/{item}', [TraiteurPhotographerController::class, 'destroyPortfolioItem'])
+        ->name('traiteur.services.photographer.portfolio.destroy');
 });

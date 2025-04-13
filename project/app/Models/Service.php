@@ -45,4 +45,16 @@ class Service extends Model
     {
         return $this->hasMany(Negafa::class);
     }
+    public function makeups()
+    {
+        return $this->hasMany(Makeup::class);
+    }
+
+/**
+ * Relation avec les photographers
+ */
+public function photographers()
+    {
+        return $this->hasMany(Photographer::class);
+    }
 }
