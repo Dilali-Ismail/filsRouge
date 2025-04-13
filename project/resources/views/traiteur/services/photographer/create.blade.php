@@ -63,7 +63,7 @@
                             </label>
                             <input type="number" name="price" id="price" value="{{ old('price') }}" required min="0" step="0.01"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
-                                placeholder="Ex: 2500.00">
+                                placeholder="Ex: 3000.00">
 
                             @error('price')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

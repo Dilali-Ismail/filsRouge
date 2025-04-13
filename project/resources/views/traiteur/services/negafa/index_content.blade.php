@@ -15,7 +15,7 @@
     @if(count($negafas) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($negafas as $negafa)
-                <a href="{{ route('traiteur.services.negafa.show', $negafa->id) }}" class="group">
+                <div class="group h-full">
                     <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform group-hover:-translate-y-1 h-full flex flex-col">
                         <!-- Image de la négafa -->
                         <div class="relative h-48">
@@ -61,15 +61,15 @@
 
                         <!-- Bouton Voir le portfolio -->
                         <div class="px-4 pb-4 mt-auto">
-                            <div class="w-full text-center py-2 bg-gray-100 hover:bg-[#FADADD]/30 text-gray-700 hover:text-[#C08081] rounded-lg transition duration-300 text-sm font-medium">
+                            <a href="{{ route('traiteur.services.negafa.show', $negafa->id) }}" class="block w-full text-center py-2 bg-gray-100 hover:bg-[#FADADD]/30 text-gray-700 hover:text-[#C08081] rounded-lg transition duration-300 text-sm font-medium">
                                 Voir le portfolio
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
-                            </div>
+                            </a>
                         </div>
                     </div>
-                </a>
+                </div>
             @endforeach
         </div>
     @else
@@ -105,7 +105,7 @@
             </div>
         </div>
         <div class="px-6 py-4">
-            <p class="text-gray-700">Êtes-vous sûr de vouloir supprimer cette négafa ? Cette action est irréversible.</p>
+            <p class="text-gray-700" id="delete-message">Êtes-vous sûr de vouloir supprimer cette négafa ? Cette action est irréversible.</p>
         </div>
         <div class="px-6 py-3 bg-gray-50 flex justify-end space-x-3">
             <button id="cancel-delete" type="button" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
@@ -119,27 +119,39 @@
 </div>
 
 <script>
+    // Variable pour stocker le formulaire de suppression en cours
     let currentForm = null;
 
+    // Fonction pour ouvrir la modale de confirmation
     function confirmDelete(button) {
         currentForm = button.closest('.delete-form');
-        document.getElementById('delete-modal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
+        const modal = document.getElementById('delete-modal');
+
+        // Affichage de la modale
+        if (modal) {
+            document.getElementById('delete-message').textContent = 'Êtes-vous sûr de vouloir supprimer cette négafa ? Cette action est irréversible.';
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
     }
 
+    // Initialisation des événements une fois que le DOM est chargé
     document.addEventListener('DOMContentLoaded', function() {
         const deleteModal = document.getElementById('delete-modal');
         const cancelDelete = document.getElementById('cancel-delete');
         const confirmDelete = document.getElementById('confirm-delete');
 
-        // Fermer la modale si on clique sur Annuler
+        // Si l'un des éléments n'existe pas, on sort
+        if (!deleteModal || !cancelDelete || !confirmDelete) return;
+
+        // Fermer la modale sur Annuler
         cancelDelete.addEventListener('click', function() {
             deleteModal.classList.add('hidden');
             document.body.classList.remove('overflow-hidden');
             currentForm = null;
         });
 
-        // Confirmer la suppression
+        // Soumettre le formulaire sur Confirmer
         confirmDelete.addEventListener('click', function() {
             if (currentForm) {
                 currentForm.submit();

@@ -81,7 +81,7 @@ class TraiteurNegafaController extends Controller
         // Création de la négafa
         $negafa = $this->negafaService->createNegafa($negafaService->id, $request->all());
 
-        return redirect()->route('traiteur.services.negafa.show', $negafa->id)
+        return redirect()->route('traiteur.services.negafa.index', $negafa->id)
             ->with('success', 'La négafa a été ajoutée avec succès.');
     }
 
