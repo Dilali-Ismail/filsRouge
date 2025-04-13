@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TraiteurMenuController;
+use App\Http\Controllers\TraiteurNegafaController;
 use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -158,5 +159,34 @@ Route::post('/traiteur/services/vetements/{style}/items', [TraiteurClothingContr
 Route::get('/traiteur/services/vetements/{style}/items/{item}/edit', [TraiteurClothingController::class, 'editClothingItem'])->name('traiteur.services.vetements.items.edit');
 Route::put('/traiteur/services/vetements/{style}/items/{item}', [TraiteurClothingController::class, 'updateClothingItem'])->name('traiteur.services.vetements.items.update');
 Route::delete('/traiteur/services/vetements/{style}/items/{item}', [TraiteurClothingController::class, 'destroyClothingItem'])->name('traiteur.services.vetements.items.destroy');
+
+  // Liste des négafas
+  Route::get('/traiteur/services/negafa', [TraiteurNegafaController::class, 'index'])
+  ->name('traiteur.services.negafa.index');
+
+// Création d'une négafa
+Route::get('/traiteur/services/negafa/create', [TraiteurNegafaController::class, 'create'])
+  ->name('traiteur.services.negafa.create');
+Route::post('/traiteur/services/negafa', [TraiteurNegafaController::class, 'store'])
+  ->name('traiteur.services.negafa.store');
+
+// Affichage, édition et suppression d'une négafa
+    Route::get('/traiteur/services/negafa/{negafa}', [TraiteurNegafaController::class, 'show'])
+    ->name('traiteur.services.negafa.show');
+    Route::get('/traiteur/services/negafa/{negafa}/edit', [TraiteurNegafaController::class, 'edit'])
+    ->name('traiteur.services.negafa.edit');
+    Route::put('/traiteur/services/negafa/{negafa}', [TraiteurNegafaController::class, 'update'])
+    ->name('traiteur.services.negafa.update');
+    Route::delete('/traiteur/services/negafa/{negafa}', [TraiteurNegafaController::class, 'destroy'])
+    ->name('traiteur.services.negafa.destroy');
+
+    // Gestion du portfolio 
+    Route::get('/traiteur/services/negafa/{negafa}/portfolio/create', [TraiteurNegafaController::class, 'createPortfolioItem'])
+    ->name('traiteur.services.negafa.portfolio.create');
+    Route::post('/traiteur/services/negafa/{negafa}/portfolio', [TraiteurNegafaController::class, 'storePortfolioItem'])
+    ->name('traiteur.services.negafa.portfolio.store');
+    Route::delete('/traiteur/services/negafa/{negafa}/portfolio/{item}', [TraiteurNegafaController::class, 'destroyPortfolioItem'])
+    ->name('traiteur.services.negafa.portfolio.destroy');
+
 
 });

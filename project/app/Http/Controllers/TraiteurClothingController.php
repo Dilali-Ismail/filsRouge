@@ -55,8 +55,8 @@ class TraiteurClothingController extends Controller
         $traiteurId = Auth::user()->traiteur->id;
         $service = $this->clothingService->createClothingService($traiteurId, $request->validated());
 
-        return redirect()->route('traiteur.services.vetements.show', $service->id)
-            ->with('success', 'Le service de vêtements a été créé avec succès.');
+        return redirect()->route('traiteur.services.negafa.index')
+        ->with('success', 'La négafa a été ajoutée avec succès.');
     }
 
     public function show($id)

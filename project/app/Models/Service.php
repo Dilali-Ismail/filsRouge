@@ -41,4 +41,8 @@ class Service extends Model
     {
         return $this->hasMany(Clothing::class);
     }
+    public function negafas()
+    {
+        return $this->hasMany(Negafa::class);
+    }
 }
