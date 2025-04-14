@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TraiteurMenuController;
 use App\Http\Controllers\TraiteurMakeupController;
 use App\Http\Controllers\TraiteurNegafaController;
+use App\Http\Controllers\TraiteurAmariyaController;
 use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\TraiteurPhotographerController;
@@ -251,4 +252,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('traiteur.services.photographer.portfolio.store');
     Route::delete('/traiteur/services/photographer/{photographer}/portfolio/{item}', [TraiteurPhotographerController::class, 'destroyPortfolioItem'])
         ->name('traiteur.services.photographer.portfolio.destroy');
+});
+
+// Routes pour le service Amariya
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des amariyas
+    Route::get('/traiteur/services/amariya', [TraiteurAmariyaController::class, 'index'])
+        ->name('traiteur.services.amariya.index');
+
+    // Création d'une amariya
+    Route::get('/traiteur/services/amariya/create', [TraiteurAmariyaController::class, 'create'])
+        ->name('traiteur.services.amariya.create');
+    Route::post('/traiteur/services/amariya', [TraiteurAmariyaController::class, 'store'])
+        ->name('traiteur.services.amariya.store');
+
+    // Affichage, édition et suppression d'une amariya
+    Route::get('/traiteur/services/amariya/{amariya}', [TraiteurAmariyaController::class, 'show'])
+        ->name('traiteur.services.amariya.show');
+    Route::get('/traiteur/services/amariya/{amariya}/edit', [TraiteurAmariyaController::class, 'edit'])
+        ->name('traiteur.services.amariya.edit');
+    Route::put('/traiteur/services/amariya/{amariya}', [TraiteurAmariyaController::class, 'update'])
+        ->name('traiteur.services.amariya.update');
+    Route::delete('/traiteur/services/amariya/{amariya}', [TraiteurAmariyaController::class, 'destroy'])
+        ->name('traiteur.services.amariya.destroy');
 });

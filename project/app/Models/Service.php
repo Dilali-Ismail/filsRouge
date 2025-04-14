@@ -50,11 +50,13 @@ class Service extends Model
         return $this->hasMany(Makeup::class);
     }
 
-/**
- * Relation avec les photographers
- */
-public function photographers()
+    public function photographers()
     {
         return $this->hasMany(Photographer::class);
+    }
+
+    public function amariyas()
+    {
+        return $this->hasMany(Amariya::class);
     }
 }
