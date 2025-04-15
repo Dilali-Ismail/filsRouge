@@ -4,18 +4,22 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Eloquent\MakeupRepository;
+use App\Repositories\Eloquent\SalleRepository;
 use App\Repositories\Eloquent\NegafaRepository;
 use App\Repositories\Eloquent\AmariyaRepository;
 use App\Repositories\Eloquent\ServiceRepository;
 use App\Repositories\Eloquent\ClothingRepository;
 use App\Repositories\Eloquent\MenuItemRepository;
+use App\Repositories\Eloquent\DecorationRepository;
 use App\Repositories\Eloquent\PhotographerRepository;
+use App\Repositories\Interfaces\SalleRepositoryInterface;
 use App\Repositories\Interfaces\MakeupRepositoryInterface;
 use App\Repositories\Interfaces\NegafaRepositoryInterface;
 use App\Repositories\Interfaces\AmariyaRepositoryInterface;
 use App\Repositories\Interfaces\ServiceRepositoryInterface;
 use App\Repositories\Interfaces\ClothingRepositoryInterface;
 use App\Repositories\Interfaces\MenuItemRepositoryInterface;
+use App\Repositories\Interfaces\DecorationRepositoryInterface;
 use App\Repositories\Interfaces\PhotographerRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -56,6 +60,14 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             AmariyaRepositoryInterface::class,
             AmariyaRepository::class
+        );
+        $this->app->bind(
+            DecorationRepositoryInterface::class,
+            DecorationRepository::class
+        );
+        $this->app->bind(
+            SalleRepositoryInterface::class,
+            SalleRepository::class
         );
     }
 

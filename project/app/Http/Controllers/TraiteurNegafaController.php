@@ -185,28 +185,28 @@ class TraiteurNegafaController extends Controller
      * Enregistre un nouvel élément au portfolio
      */
     public function storePortfolioItem(Request $request, $negafaId)
-    {
-        $request->validate([
-            'type' => 'required|in:image,video',
-            'file' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'type' => 'required|in:image,video',
+        'file' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:48000', // 48MB
+        'title' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+    ]);
 
-        $negafa = $this->negafaService->getNegafaWithPortfolio($negafaId);
+    $negafa = $this->negafaService->getNegafaWithPortfolio($negafaId);
 
-        // Vérifie que la négafa appartient au traiteur connecté
-        if (!$this->negafaBelongsToTraiteur($negafa)) {
-            return redirect()->route('traiteur.services.negafa.index')
-                ->with('error', 'Vous n\'êtes pas autorisé à modifier cette négafa.');
-        }
-
-        // Ajout de l'élément au portfolio
-        $this->negafaService->addPortfolioItem($negafaId, $request->all());
-
-        return redirect()->route('traiteur.services.negafa.show', $negafaId)
-            ->with('success', 'L\'élément a été ajouté au portfolio avec succès.');
+    // Vérifie que la négafa appartient au traiteur connecté
+    if (!$this->negafaBelongsToTraiteur($negafa)) {
+        return redirect()->route('traiteur.services.negafa.index')
+            ->with('error', 'Vous n\'êtes pas autorisé à modifier cette négafa.');
     }
+
+    // Ajout de l'élément au portfolio
+    $this->negafaService->addPortfolioItem($negafaId, $request->all());
+
+    return redirect()->route('traiteur.services.negafa.show', $negafaId)
+        ->with('success', 'L\'élément a été ajouté au portfolio avec succès.');
+}
 
     /**
      * Supprime un élément du portfolio

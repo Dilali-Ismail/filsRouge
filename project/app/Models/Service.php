@@ -59,4 +59,12 @@ class Service extends Model
     {
         return $this->hasMany(Amariya::class);
     }
+    public function decorations()
+    {
+        return $this->hasMany(Decoration::class);
+    }
+    public function salles()
+    {
+        return $this->hasMany(Salle::class);
+    }
 }

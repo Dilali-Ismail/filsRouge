@@ -22,6 +22,14 @@ RUN a2enmod rewrite
 # Configuration Apache pour pointer vers le dossier public de Laravel
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
+# Augmentation des limites de taille pour les uploads
+RUN { \
+    echo 'upload_max_filesize = 50M'; \
+    echo 'post_max_size = 50M'; \
+    echo 'max_execution_time = 300'; \
+    echo 'max_input_time = 300'; \
+} > /usr/local/etc/php/conf.d/uploads.ini
+
 # Définition du répertoire de travail
 WORKDIR /var/www/html
 

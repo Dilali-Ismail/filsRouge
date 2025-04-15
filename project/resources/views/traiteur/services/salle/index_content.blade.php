@@ -1,39 +1,39 @@
 <div class="mb-6">
-    <h2 class="text-2xl font-semibold text-[#333333] mb-6 text-center">Gestion des Amariyas</h2>
+    <h2 class="text-2xl font-semibold text-[#333333] mb-6 text-center">Gestion des Salles de Réception</h2>
 
     <!-- Bouton d'ajout -->
     <div class="mb-6 flex justify-end">
-        <a href="{{ route('traiteur.services.amariya.create') }}" class="px-4 py-2 bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white rounded-lg transition duration-300 shadow-md flex items-center">
+        <a href="{{ route('traiteur.services.salle.create') }}" class="px-4 py-2 bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white rounded-lg transition duration-300 shadow-md flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            Ajouter une amariya
+            Ajouter une salle
         </a>
     </div>
 
-    <!-- Liste des amariyas -->
-    @if(count($amariyas) > 0)
+    <!-- Liste des salles -->
+    @if(count($salles) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($amariyas as $amariya)
+            @foreach($salles as $salle)
                 <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                    <!-- Image de l'amariya -->
+                    <!-- Image de la salle -->
                     <div class="relative h-48">
-                        @if($amariya->photo)
-                            <img src="{{ asset('storage/' . $amariya->photo) }}" alt="{{ $amariya->name }}" class="w-full h-full object-cover">
+                        @if($salle->photo)
+                            <img src="{{ asset('storage/' . $salle->photo) }}" alt="{{ $salle->name }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m4 4h1m-1 4h1m-12 4h7" />
                                 </svg>
                             </div>
                         @endif
                         <div class="absolute top-0 right-0 mt-2 mr-2 flex gap-1">
-                            <a href="{{ route('traiteur.services.amariya.edit', $amariya->id) }}" class="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition duration-300" title="Modifier">
+                            <a href="{{ route('traiteur.services.salle.edit', $salle->id) }}" class="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition duration-300" title="Modifier">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('traiteur.services.amariya.destroy', $amariya->id) }}" method="POST" class="inline delete-form">
+                            <form action="{{ route('traiteur.services.salle.destroy', $salle->id) }}" method="POST" class="inline delete-form">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-full transition duration-300 delete-btn" title="Supprimer" onclick="confirmDelete(this)">
@@ -45,13 +45,31 @@
                         </div>
                     </div>
 
-                    <!-- Informations sur l'amariya -->
+                    <!-- Informations sur la salle -->
                     <div class="p-4 flex-grow">
-                        <h3 class="text-lg font-semibold text-[#333333] mb-2">{{ $amariya->name }}</h3>
-                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $amariya->description ?? 'Aucune description' }}</p>
+                        <h3 class="text-lg font-semibold text-[#333333] mb-2">{{ $salle->name }}</h3>
+
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="text-gray-600 text-sm">{{ $salle->location }}</span>
+                        </div>
+
+                        <div class="flex items-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-gray-600 text-sm">{{ $salle->tables_count }} tables disponibles</span>
+                        </div>
+
+                        @if($salle->description)
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $salle->description }}</p>
+                        @endif
 
                         <div class="mt-auto">
-                            <span class="text-[#C08081] font-semibold">{{ number_format($amariya->price, 2) }} DH</span>
+                            <span class="text-[#C08081] font-semibold">{{ number_format($salle->price, 2) }} DH</span>
                         </div>
                     </div>
                 </div>
@@ -60,15 +78,15 @@
     @else
         <div class="bg-white rounded-xl shadow-md p-8 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m4 4h1m-1 4h1m-12 4h7" />
             </svg>
-            <h3 class="text-lg font-medium text-gray-600 mb-4">Aucune amariya disponible</h3>
-            <p class="text-gray-500 mb-6">Ajoutez votre première amariya en utilisant le bouton "Ajouter une amariya".</p>
-            <a href="{{ route('traiteur.services.amariya.create') }}" class="px-5 py-3 bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white rounded-lg transition duration-300 shadow-md inline-flex items-center">
+            <h3 class="text-lg font-medium text-gray-600 mb-4">Aucune salle disponible</h3>
+            <p class="text-gray-500 mb-6">Ajoutez votre première salle de réception en utilisant le bouton "Ajouter une salle".</p>
+            <a href="{{ route('traiteur.services.salle.create') }}" class="px-5 py-3 bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white rounded-lg transition duration-300 shadow-md inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                Ajouter une amariya
+                Ajouter une salle
             </a>
         </div>
     @endif
@@ -90,7 +108,7 @@
             </div>
         </div>
         <div class="px-6 py-4">
-            <p class="text-gray-700" id="delete-message">Êtes-vous sûr de vouloir supprimer cette amariya ? Cette action est irréversible.</p>
+            <p class="text-gray-700" id="delete-message">Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible.</p>
         </div>
         <div class="px-6 py-3 bg-gray-50 flex justify-end space-x-3">
             <button id="cancel-delete" type="button" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
@@ -114,7 +132,7 @@
 
         // Affichage de la modale
         if (modal) {
-            document.getElementById('delete-message').textContent = 'Êtes-vous sûr de vouloir supprimer cette amariya ? Cette action est irréversible.';
+            document.getElementById('delete-message').textContent = 'Êtes-vous sûr de vouloir supprimer cette salle ? Cette action est irréversible.';
             modal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         }

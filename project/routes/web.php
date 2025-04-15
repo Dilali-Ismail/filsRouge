@@ -6,11 +6,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\TraiteurMenuController;
+use App\Http\Controllers\TraiteurSalleController;
 use App\Http\Controllers\TraiteurMakeupController;
 use App\Http\Controllers\TraiteurNegafaController;
 use App\Http\Controllers\TraiteurAmariyaController;
 use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\TraiteurDecorationController;
 use App\Http\Controllers\TraiteurPhotographerController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -275,4 +277,48 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('traiteur.services.amariya.update');
     Route::delete('/traiteur/services/amariya/{amariya}', [TraiteurAmariyaController::class, 'destroy'])
         ->name('traiteur.services.amariya.destroy');
+});
+// Routes pour le service Decoration
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des décorations
+    Route::get('/traiteur/services/decoration', [TraiteurDecorationController::class, 'index'])
+        ->name('traiteur.services.decoration.index');
+
+    // Création d'une décoration
+    Route::get('/traiteur/services/decoration/create', [TraiteurDecorationController::class, 'create'])
+        ->name('traiteur.services.decoration.create');
+    Route::post('/traiteur/services/decoration', [TraiteurDecorationController::class, 'store'])
+        ->name('traiteur.services.decoration.store');
+
+    // Affichage, édition et suppression d'une décoration
+    Route::get('/traiteur/services/decoration/{decoration}', [TraiteurDecorationController::class, 'show'])
+        ->name('traiteur.services.decoration.show');
+    Route::get('/traiteur/services/decoration/{decoration}/edit', [TraiteurDecorationController::class, 'edit'])
+        ->name('traiteur.services.decoration.edit');
+    Route::put('/traiteur/services/decoration/{decoration}', [TraiteurDecorationController::class, 'update'])
+        ->name('traiteur.services.decoration.update');
+    Route::delete('/traiteur/services/decoration/{decoration}', [TraiteurDecorationController::class, 'destroy'])
+        ->name('traiteur.services.decoration.destroy');
+});
+// Routes pour le service Salle
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des salles
+    Route::get('/traiteur/services/salle', [TraiteurSalleController::class, 'index'])
+        ->name('traiteur.services.salle.index');
+
+    // Création d'une salle
+    Route::get('/traiteur/services/salle/create', [TraiteurSalleController::class, 'create'])
+        ->name('traiteur.services.salle.create');
+    Route::post('/traiteur/services/salle', [TraiteurSalleController::class, 'store'])
+        ->name('traiteur.services.salle.store');
+
+    // Affichage, édition et suppression d'une salle
+    Route::get('/traiteur/services/salle/{salle}', [TraiteurSalleController::class, 'show'])
+        ->name('traiteur.services.salle.show');
+    Route::get('/traiteur/services/salle/{salle}/edit', [TraiteurSalleController::class, 'edit'])
+        ->name('traiteur.services.salle.edit');
+    Route::put('/traiteur/services/salle/{salle}', [TraiteurSalleController::class, 'update'])
+        ->name('traiteur.services.salle.update');
+    Route::delete('/traiteur/services/salle/{salle}', [TraiteurSalleController::class, 'destroy'])
+        ->name('traiteur.services.salle.destroy');
 });

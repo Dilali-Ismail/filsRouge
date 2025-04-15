@@ -122,9 +122,7 @@ class PhotographerService
         return $this->photographerRepository->addPortfolioItem($photographerId, $data);
     }
 
-    /**
-     * Supprime un élément du portfolio.
-     */
+
     public function deletePortfolioItem($itemId)
     {
         return $this->photographerRepository->deletePortfolioItem($itemId);
