@@ -12,6 +12,7 @@ use App\Http\Controllers\TraiteurNegafaController;
 use App\Http\Controllers\TraiteurAmariyaController;
 use App\Http\Controllers\TraiteurClothingController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\TraiteurAnimationController;
 use App\Http\Controllers\TraiteurDecorationController;
 use App\Http\Controllers\TraiteurPhotographerController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -321,4 +322,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('traiteur.services.salle.update');
     Route::delete('/traiteur/services/salle/{salle}', [TraiteurSalleController::class, 'destroy'])
         ->name('traiteur.services.salle.destroy');
+});
+
+
+// Routes pour le service Animation
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Liste des animations
+    Route::get('/traiteur/services/animation', [TraiteurAnimationController::class, 'index'])
+        ->name('traiteur.services.animation.index');
+
+    // Création d'une animation
+    Route::get('/traiteur/services/animation/create', [TraiteurAnimationController::class, 'create'])
+        ->name('traiteur.services.animation.create');
+    Route::post('/traiteur/services/animation', [TraiteurAnimationController::class, 'store'])
+        ->name('traiteur.services.animation.store');
+
+    // Affichage, édition et suppression d'une animation
+    Route::get('/traiteur/services/animation/{animation}', [TraiteurAnimationController::class, 'show'])
+        ->name('traiteur.services.animation.show');
+    Route::get('/traiteur/services/animation/{animation}/edit', [TraiteurAnimationController::class, 'edit'])
+        ->name('traiteur.services.animation.edit');
+    Route::put('/traiteur/services/animation/{animation}', [TraiteurAnimationController::class, 'update'])
+        ->name('traiteur.services.animation.update');
+    Route::delete('/traiteur/services/animation/{animation}', [TraiteurAnimationController::class, 'destroy'])
+        ->name('traiteur.services.animation.destroy');
 });

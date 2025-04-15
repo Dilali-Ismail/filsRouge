@@ -20,7 +20,8 @@
                         ($category->name == 'photographer' ? route('traiteur.services.photographer.index') :
                         ($category->name == 'amariya' ? route('traiteur.services.amariya.index') :
                         ($category->name == 'decoration' ? route('traiteur.services.decoration.index') :
-                        ($category->name == 'salles' ? route('traiteur.services.salle.index') : '#')))))))  }}"
+                        ($category->name == 'salles' ? route('traiteur.services.salle.index') :
+                       ($category->name == 'animation' ? route('traiteur.services.animation.index') : '#' ))))))))  }}"
                     class="block px-4 py-2 rounded-lg transition-colors duration-200
                             {{ $activeTab == $category->name ? 'bg-[#FADADD] text-[#333333]' : 'text-gray-600 hover:bg-gray-100' }}"
                     data-category="{{ $category->name }}">
