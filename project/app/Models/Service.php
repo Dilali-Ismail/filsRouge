@@ -68,7 +68,12 @@ class Service extends Model
         return $this->hasMany(Salle::class);
     }
     public function animations()
-{
-    return $this->hasMany(Animation::class);
-}
+    {
+        return $this->hasMany(Animation::class);
+    }
+    public function reservationServices()
+    {
+        return $this->hasMany(ReservationService::class);
+    }
+    
 }

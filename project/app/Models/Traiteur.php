@@ -37,4 +37,25 @@ class Traiteur extends Model
     return $this->hasMany(Service::class);
     }
 
+    public function availabilities()
+    {
+        return $this->hasMany(TraiteurAvailability::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function isAvailableOn($date)
+    {
+        $availability = $this->availabilities()->where('date', $date)->first();
+
+        if (!$availability) {
+            return true;
+        }
+
+        return $availability->is_available;
+    }
+
 }
