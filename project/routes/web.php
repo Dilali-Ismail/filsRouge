@@ -4,7 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TraiteurMenuController;
 use App\Http\Controllers\TraiteurSalleController;
 use App\Http\Controllers\TraiteurMakeupController;
@@ -347,3 +350,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/traiteur/services/animation/{animation}', [TraiteurAnimationController::class, 'destroy'])
         ->name('traiteur.services.animation.destroy');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/planning', [PlanningController::class, 'index'])->name('planning.index');
+    Route::get('/planning/traiteur/{id}', [App\Http\Controllers\PlanningController::class, 'getTraiteurDetails'])->name('planning.traiteur.details');
+    Route::get('/planning/traiteur/{traiteurId}/available-dates', [App\Http\Controllers\PlanningController::class, 'getAvailableDates'])->name('planning.traiteur.dates');
+
+});
+
+
