@@ -33,5 +33,6 @@ RUN { \
 # Définition du répertoire de travail
 WORKDIR /var/www/html
 
+
 # Lancement d'Apache
 CMD ["apache2-foreground"]

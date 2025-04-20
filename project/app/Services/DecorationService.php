@@ -15,7 +15,7 @@ class DecorationService
     public function __construct(
         ServiceRepositoryInterface $serviceRepository,
         DecorationRepositoryInterface $decorationRepository
-    ) {
+    ){
         $this->serviceRepository = $serviceRepository;
         $this->decorationRepository = $decorationRepository;
     }

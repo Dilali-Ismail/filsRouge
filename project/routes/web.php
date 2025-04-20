@@ -356,6 +356,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/planning', [PlanningController::class, 'index'])->name('planning.index');
     Route::get('/planning/traiteur/{id}', [App\Http\Controllers\PlanningController::class, 'getTraiteurDetails'])->name('planning.traiteur.details');
     Route::get('/planning/traiteur/{traiteurId}/available-dates', [App\Http\Controllers\PlanningController::class, 'getAvailableDates'])->name('planning.traiteur.dates');
+    Route::post('/planning/traiteur/{traiteurId}/check-date', [App\Http\Controllers\PlanningController::class, 'checkDateAvailability'])->name('planning.traiteur.check-date');
+    Route::get('/traiteur/{traiteurId}/services', [PlanningController::class, 'services'])->name('planning.traiteur.services');
+    Route::post('/traiteur/{traiteurId}/reservation', [PlanningController::class, 'storeReservation']) ->name('planning.traiteur.reservation.store');
+
+
 
 });
 

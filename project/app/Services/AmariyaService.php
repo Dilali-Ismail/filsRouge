@@ -12,6 +12,8 @@ class AmariyaService
     protected $serviceRepository;
     protected $amariyaRepository;
 
+    //solide : DIP
+    
     public function __construct(
         ServiceRepositoryInterface $serviceRepository,
         AmariyaRepositoryInterface $amariyaRepository

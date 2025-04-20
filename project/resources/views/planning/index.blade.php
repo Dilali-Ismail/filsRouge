@@ -885,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gérer le clic sur le bouton Confirmer
+
     confirmDateBtn.addEventListener('click', function() {
         if (selectedYear && selectedMonth && selectedDay) {
             const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
@@ -894,15 +894,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gérer le clic sur le bouton fermer du modal d'info
+
     closeInfoModal.addEventListener('click', function() {
         infoModal.classList.add('hidden');
     });
 
-    // Gérer le clic sur le bouton fermer du modal de réservation
+
     closeBookModal.addEventListener('click', function() {
         bookModal.classList.add('hidden');
     });
+
 });
 </script>
 @endsection

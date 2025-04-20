@@ -13,6 +13,7 @@ class TraiteurAnimationController extends Controller
 
     public function __construct(AnimationService $animationService)
     {
+        //DI
         $this->animationService = $animationService;
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
