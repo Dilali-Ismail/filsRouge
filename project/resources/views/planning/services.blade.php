@@ -61,6 +61,41 @@
         transform: rotate(45deg);
     }
 
+    /* Style pour les boutons radio personnalisés */
+    .custom-radio {
+        display: flex;
+        align-items: center;
+    }
+
+    .custom-radio input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #FADADD;
+        border-radius: 50%;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    .custom-radio input[type="radio"]:checked {
+        border-color: #C08081;
+    }
+
+    .custom-radio input[type="radio"]:checked::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #C08081;
+    }
+
     /* Style pour le budget */
     .budget-card {
         position: sticky;
@@ -152,7 +187,22 @@
                         </p>
                     </div>
 
-                    <div class="mt-4 md:mt-0">
+                    <div class="mt-4 md:flex items-center space-x-4">
+                        <div class="mb-4 md:mb-0">
+                            <label for="nombre_invites" class="block text-sm font-medium text-gray-700 mb-1">Nombre d'invités</label>
+                            <div class="flex items-center">
+                                <input
+                                    type="number"
+                                    id="nombre_invites"
+                                    name="nombre_invites"
+                                    min="1"
+                                    placeholder="Ex: 100"
+                                    class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
+                                >
+                                <span class="ml-2 text-sm text-gray-500" id="tables_count">(0 tables)</span>
+                            </div>
+                        </div>
+
                         <a href="{{ route('planning.index') }}" class="inline-flex items-center text-gray-600 hover:text-[#C08081]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -318,6 +368,7 @@
                                                                                 data-name="{{ $item->name }}"
                                                                                 data-price="{{ $item->price }}"
                                                                                 data-parent-id="{{ $menu->id }}"
+                                                                                data-category="{{ $item->category }}"
                                                                             >
                                                                         </div>
                                                                     </div>
@@ -348,9 +399,10 @@
                                             <h3 class="text-xl font-semibold text-[#333333] mb-4">Robe de mariée</h3>
                                             <div class="space-y-4">
                                                 @php
-                                                    $robes = $services->where('category_id', $activeCategory->id)
-                                                                    ->where('style', 'traditionnel')
-                                                                    ->where('category', 'robe_mariee');
+                                                    $robes = isset($categoryData['clothingItems'])
+                                                        ? $categoryData['clothingItems']->where('style', 'traditionnel')
+                                                                                     ->where('category', 'robe_mariee')
+                                                        : collect();
                                                 @endphp
 
                                                 @if($robes->isEmpty())
@@ -380,6 +432,7 @@
                                                                             data-id="{{ $robe->id }}"
                                                                             data-name="{{ $robe->name }}"
                                                                             data-price="{{ $robe->price }}"
+                                                                            data-subtype="robe_mariee"
                                                                         >
                                                                     </div>
                                                                 </div>
@@ -395,9 +448,10 @@
                                             <h3 class="text-xl font-semibold text-[#333333] mb-4">Costume homme</h3>
                                             <div class="space-y-4">
                                                 @php
-                                                    $costumes = $services->where('category_id', $activeCategory->id)
-                                                                        ->where('style', 'traditionnel')
-                                                                        ->where('category', 'costume_homme');
+                                                    $costumes = isset($categoryData['clothingItems'])
+                                                        ? $categoryData['clothingItems']->where('style', 'traditionnel')
+                                                                                     ->where('category', 'costume_homme')
+                                                        : collect();
                                                 @endphp
 
                                                 @if($costumes->isEmpty())
@@ -420,14 +474,15 @@
 
                                                                     <div class="custom-checkbox">
                                                                         <input
-                                                                            type="checkbox"
-                                                                            id="vetement-{{ $costume->id }}"
-                                                                            class="service-checkbox"
-                                                                            data-type="vetement"
-                                                                            data-id="{{ $costume->id }}"
-                                                                            data-name="{{ $costume->name }}"
-                                                                            data-price="{{ $costume->price }}"
-                                                                        >
+                                                                        type="checkbox"
+                                                                        id="vetement-{{ $costume->id }}"
+                                                                        class="service-checkbox"
+                                                                        data-type="vetement"
+                                                                        data-id="{{ $costume->id }}"
+                                                                        data-name="{{ $costume->name }}"
+                                                                        data-price="{{ $costume->price }}"
+                                                                        data-subtype="costume_homme"
+                                                                    >
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -446,9 +501,10 @@
                                             <h3 class="text-xl font-semibold text-[#333333] mb-4">Robe de mariée</h3>
                                             <div class="space-y-4">
                                                 @php
-                                                    $robesModernes = $services->where('category_id', $activeCategory->id)
-                                                                    ->where('style', 'moderne')
-                                                                    ->where('category', 'robe_mariee');
+                                                    $robesModernes = isset($categoryData['clothingItems'])
+                                                        ? $categoryData['clothingItems']->where('style', 'moderne')
+                                                                                     ->where('category', 'robe_mariee')
+                                                        : collect();
                                                 @endphp
 
                                                 @if($robesModernes->isEmpty())
@@ -471,31 +527,32 @@
 
                                                                     <div class="custom-checkbox">
                                                                         <input
-                                                                            type="checkbox"
-                                                                            id="vetement-{{ $robe->id }}"
-                                                                            class="service-checkbox"
-                                                                            data-type="vetement"
-                                                                            data-id="{{ $robe->id }}"
-                                                                            data-name="{{ $robe->name }}"
-                                                                            data-price="{{ $robe->price }}"
-                                                                        >
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                @endif
-                                            </div>
-                                        </div>
+                                                                           type="checkbox"
+                                                                           id="vetement-{{ $robe->id }}"
+                                                                           class="service-checkbox"
+                                                                           data-type="vetement"
+                                                                           data-id="{{ $robe->id }}"
+                                                                           data-name="{{ $robe->name }}"
+                                                                           data-price="{{ $robe->price }}"
+                                                                       >
+                                                                   </div>
+                                                               </div>
+                                                           </div>
+                                                       </div>
+                                                   @endforeach
+                                               @endif
+                                           </div>
+                                       </div>
 
-                                        <!-- Costume homme moderne -->
-                                        <div>
-                                            <h3 class="text-xl font-semibold text-[#333333] mb-4">Costume homme</h3>
-                                            <div class="space-y-4">
-                                                @php
-                                                    $costumesModernes = $services->where('category_id', $activeCategory->id)
-                                                    ->where('style', 'moderne')
-                                                                       ->where('category', 'costume_homme');
+                                       <!-- Costume homme moderne -->
+                                       <div>
+                                           <h3 class="text-xl font-semibold text-[#333333] mb-4">Costume homme</h3>
+                                           <div class="space-y-4">
+                                               @php
+                                                   $costumesModernes = isset($categoryData['clothingItems'])
+                                                       ? $categoryData['clothingItems']->where('style', 'moderne')
+                                                                                    ->where('category', 'costume_homme')
+                                                       : collect();
                                                @endphp
 
                                                @if($costumesModernes->isEmpty())
@@ -540,45 +597,44 @@
                        @elseif(in_array($activeCategory->name, ['negafa', 'maquillage', 'photographer']))
                            <!-- Affichage pour Negafa, Maquilleuse et Photographe (avec portfolios) -->
                            <div class="space-y-8">
-                               @if($services->isEmpty())
+                               @php
+                                   // Déterminer quelle collection utiliser selon la catégorie active
+                                   $items = collect();
+                                   if ($activeCategory->name === 'negafa' && isset($categoryData['negafas'])) {
+                                       $items = $categoryData['negafas'];
+                                   } elseif ($activeCategory->name === 'maquillage' && isset($categoryData['makeups'])) {
+                                       $items = $categoryData['makeups'];
+                                   } elseif ($activeCategory->name === 'photographer' && isset($categoryData['photographers'])) {
+                                       $items = $categoryData['photographers'];
+                                   }
+                               @endphp
+
+                               @if($items->isEmpty())
                                    <p class="text-gray-500 text-center py-4">Aucun service disponible.</p>
                                @else
-                                   @foreach($services as $service)
-                                       @php
-                                           // Récupérer le type de service correct selon la catégorie
-                                           if ($activeCategory->name === 'negafa') {
-                                               $serviceDetail = App\Models\Negafa::where('service_id', $service->id)->first();
-                                               $portfolioItems = $serviceDetail ? App\Models\NegafaPortfolioItem::where('negafa_id', $serviceDetail->id)->get() : collect();
-                                           } elseif ($activeCategory->name === 'maquillage') {
-                                               $serviceDetail = App\Models\Makeup::where('service_id', $service->id)->first();
-                                               $portfolioItems = $serviceDetail ? App\Models\MakeupPortfolioItem::where('makeup_id', $serviceDetail->id)->get() : collect();
-                                           } elseif ($activeCategory->name === 'photographer') {
-                                               $serviceDetail = App\Models\Photographer::where('service_id', $service->id)->first();
-                                               $portfolioItems = $serviceDetail ? App\Models\PhotographerPortfolioItem::where('photographer_id', $serviceDetail->id)->get() : collect();
-                                           }
-                                       @endphp
-
+                                   @foreach($items as $item)
                                        <div class="service-card border rounded-lg overflow-hidden">
                                            <div class="p-5 bg-gray-50 border-b">
                                                <div class="flex justify-between items-start">
                                                    <div>
-                                                       <h3 class="text-xl font-semibold text-[#333333]">{{ $serviceDetail ? $serviceDetail->name : $service->title }}</h3>
-                                                       @if($serviceDetail && $serviceDetail->experience)
+                                                       <h3 class="text-xl font-semibold text-[#333333]">{{ $item->name }}</h3>
+                                                       @if($item->experience)
                                                            <p class="text-sm text-gray-600 mt-1">
-                                                               <span class="font-medium">Expérience:</span> {{ $serviceDetail->experience }}
+                                                               <span class="font-medium">Expérience:</span> {{ $item->experience }}
                                                            </p>
                                                        @endif
                                                    </div>
 
-                                                   <div class="custom-checkbox">
+                                                   <div class="custom-radio">
                                                        <input
-                                                           type="checkbox"
-                                                           id="{{ $activeCategory->name }}-{{ $service->id }}"
-                                                           class="service-checkbox"
+                                                           type="radio"
+                                                           name="{{ $activeCategory->name }}-selection"
+                                                           id="{{ $activeCategory->name }}-{{ $item->id }}"
+                                                           class="service-radio"
                                                            data-type="{{ $activeCategory->name }}"
-                                                           data-id="{{ $service->id }}"
-                                                           data-name="{{ $serviceDetail ? $serviceDetail->name : $service->title }}"
-                                                           data-price="{{ $serviceDetail ? $serviceDetail->price : 0 }}"
+                                                           data-id="{{ $item->id }}"
+                                                           data-name="{{ $item->name }}"
+                                                           data-price="{{ $item->price }}"
                                                        >
                                                    </div>
                                                </div>
@@ -586,21 +642,21 @@
 
                                            <div class="p-5">
                                                <div class="flex items-start">
-                                                   @if($serviceDetail && $serviceDetail->photo)
-                                                       <img src="{{ asset('storage/' . $serviceDetail->photo) }}" alt="{{ $serviceDetail->name }}" class="w-24 h-24 object-cover rounded-lg mr-4">
+                                                   @if($item->photo)
+                                                       <img src="{{ asset('storage/' . $item->photo) }}" alt="{{ $item->name }}" class="w-24 h-24 object-cover rounded-lg mr-4">
                                                    @endif
                                                    <div>
                                                        <p class="text-gray-600">
-                                                           {{ $serviceDetail ? $serviceDetail->description : $service->description }}
+                                                           {{ $item->description }}
                                                        </p>
                                                        <p class="text-[#C08081] font-medium mt-2">
-                                                           {{ $serviceDetail ? number_format($serviceDetail->price, 2) : '0.00' }} MAD
+                                                           {{ number_format($item->price, 2) }} MAD
                                                        </p>
 
-                                                       @if(isset($portfolioItems) && $portfolioItems->isNotEmpty())
+                                                       @if(isset($item->portfolioItems) && $item->portfolioItems->isNotEmpty())
                                                            <button
                                                                class="mt-4 text-sm text-[#C08081] font-medium flex items-center view-portfolio-btn"
-                                                               data-service-id="{{ $service->id }}"
+                                                               data-service-id="{{ $item->id }}"
                                                            >
                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -609,14 +665,14 @@
                                                            </button>
 
                                                            <!-- Portfolio caché (sera affiché en modal) -->
-                                                           <div class="hidden portfolio-items" id="portfolio-{{ $service->id }}">
-                                                               @foreach($portfolioItems as $item)
+                                                           <div class="hidden portfolio-items" id="portfolio-{{ $item->id }}">
+                                                               @foreach($item->portfolioItems as $portfolioItem)
                                                                    <div
                                                                        class="portfolio-item"
-                                                                       data-type="{{ $item->type }}"
-                                                                       data-path="{{ asset('storage/' . $item->file_path) }}"
-                                                                       data-title="{{ $item->title }}"
-                                                                       data-description="{{ $item->description }}"
+                                                                       data-type="{{ $portfolioItem->type }}"
+                                                                       data-path="{{ asset('storage/' . $portfolioItem->file_path) }}"
+                                                                       data-title="{{ $portfolioItem->title }}"
+                                                                       data-description="{{ $portfolioItem->description }}"
                                                                    ></div>
                                                                @endforeach
                                                            </div>
@@ -631,115 +687,115 @@
                        @elseif($activeCategory->name === 'salles')
                            <!-- Affichage des salles -->
                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               @if($services->isEmpty())
+                               @php
+                                   $salles = isset($categoryData['salles']) ? $categoryData['salles'] : collect();
+                               @endphp
+
+                               @if($salles->isEmpty())
                                    <p class="text-gray-500 text-center py-4 col-span-full">Aucune salle disponible.</p>
                                @else
-                                   @foreach($services as $service)
-                                       @php
-                                           $salle = App\Models\Salle::where('service_id', $service->id)->first();
-                                       @endphp
+                                   @foreach($salles as $salle)
+                                       <div class="service-card border rounded-lg overflow-hidden">
+                                           @if($salle->photo)
+                                               <img src="{{ asset('storage/' . $salle->photo) }}" alt="{{ $salle->name }}" class="w-full h-48 object-cover">
+                                           @endif
+                                           <div class="p-4">
+                                               <div class="flex justify-between items-start">
+                                                   <div>
+                                                       <h3 class="text-lg font-semibold text-[#333333]">{{ $salle->name }}</h3>
+                                                       <p class="text-sm text-gray-600 mt-1">
+                                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                           </svg>
+                                                           {{ $salle->location }}
+                                                       </p>
+                                                       <p class="text-sm text-gray-600 mt-1">
+                                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                           </svg>
+                                                           {{ $salle->tables_count }} tables
+                                                       </p>
+                                                       @if($salle->description)
+                                                           <p class="text-sm text-gray-600 mt-2">{{ $salle->description }}</p>
+                                                       @endif
+                                                       <p class="text-[#C08081] font-medium mt-2">{{ number_format($salle->price, 2) }} MAD</p>
+                                                   </div>
 
-                                       @if($salle)
-                                           <div class="service-card border rounded-lg overflow-hidden">
-                                               @if($salle->photo)
-                                                   <img src="{{ asset('storage/' . $salle->photo) }}" alt="{{ $salle->name }}" class="w-full h-48 object-cover">
-                                               @endif
-                                               <div class="p-4">
-                                                   <div class="flex justify-between items-start">
-                                                       <div>
-                                                           <h3 class="text-lg font-semibold text-[#333333]">{{ $salle->name }}</h3>
-                                                           <p class="text-sm text-gray-600 mt-1">
-                                                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                               </svg>
-                                                               {{ $salle->location }}
-                                                           </p>
-                                                           <p class="text-sm text-gray-600 mt-1">
-                                                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                               </svg>
-                                                               {{ $salle->tables_count }} tables
-                                                           </p>
-                                                           @if($salle->description)
-                                                               <p class="text-sm text-gray-600 mt-2">{{ $salle->description }}</p>
-                                                           @endif
-                                                           <p class="text-[#C08081] font-medium mt-2">{{ number_format($salle->price, 2) }} MAD</p>
-                                                       </div>
-
-                                                       <div class="custom-checkbox mt-1">
-                                                           <input
-                                                               type="checkbox"
-                                                               id="salle-{{ $salle->id }}"
-                                                               class="service-checkbox"
-                                                               data-type="salle"
-                                                               data-id="{{ $salle->id }}"
-                                                               data-name="{{ $salle->name }}"
-                                                               data-price="{{ $salle->price }}"
-                                                           >
-                                                       </div>
+                                                   <div class="custom-radio mt-1">
+                                                       <input
+                                                           type="radio"
+                                                           name="salle-selection"
+                                                           id="salle-{{ $salle->id }}"
+                                                           class="service-radio"
+                                                           data-type="salle"
+                                                           data-id="{{ $salle->id }}"
+                                                           data-name="{{ $salle->name }}"
+                                                           data-price="{{ $salle->price }}"
+                                                           data-tables="{{ $salle->tables_count }}"
+                                                       >
                                                    </div>
                                                </div>
                                            </div>
-                                       @endif
+                                       </div>
                                    @endforeach
                                @endif
                            </div>
                        @elseif(in_array($activeCategory->name, ['decoration', 'amariya', 'animation']))
                            <!-- Affichage pour Decoration, Amariya, Animation -->
                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               @if($services->isEmpty())
+                               @php
+                                   // Déterminer quelle collection utiliser selon la catégorie active
+                                   $items = collect();
+                                   if ($activeCategory->name === 'decoration' && isset($categoryData['decorations'])) {
+                                       $items = $categoryData['decorations'];
+                                   } elseif ($activeCategory->name === 'amariya' && isset($categoryData['amariyas'])) {
+                                       $items = $categoryData['amariyas'];
+                                   } elseif ($activeCategory->name === 'animation' && isset($categoryData['animations'])) {
+                                       $items = $categoryData['animations'];
+                                   }
+                               @endphp
+
+                               @if($items->isEmpty())
                                    <p class="text-gray-500 text-center py-4 col-span-full">Aucun service disponible.</p>
                                @else
-                                   @foreach($services as $service)
-                                       @php
-                                           // Récupérer le type de service correct selon la catégorie
-                                           if ($activeCategory->name === 'decoration') {
-                                               $serviceDetail = App\Models\Decoration::where('service_id', $service->id)->first();
-                                           } elseif ($activeCategory->name === 'amariya') {
-                                               $serviceDetail = App\Models\Amariya::where('service_id', $service->id)->first();
-                                           } elseif ($activeCategory->name === 'animation') {
-                                               $serviceDetail = App\Models\Animation::where('service_id', $service->id)->first();
-                                           }
-                                       @endphp
+                                   @foreach($items as $item)
+                                       <div class="service-card border rounded-lg overflow-hidden">
+                                           @if($item->photo)
+                                               <img src="{{ asset('storage/' . $item->photo) }}" alt="{{ $item->name }}" class="w-full h-48 object-cover">
+                                           @endif
+                                           <div class="p-4">
+                                               <div class="flex justify-between items-start">
+                                                   <div>
+                                                       <h3 class="text-lg font-semibold text-[#333333]">{{ $item->name }}</h3>
+                                                       @if($activeCategory->name === 'animation' && isset($item->type))
+                                                           <p class="text-sm text-gray-600 mt-1">
+                                                               <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                                                                   {{ ucfirst($item->type) }}
+                                                               </span>
+                                                           </p>
+                                                       @endif
+                                                       @if($item->description)
+                                                           <p class="text-sm text-gray-600 mt-2">{{ $item->description }}</p>
+                                                       @endif
+                                                       <p class="text-[#C08081] font-medium mt-2">{{ number_format($item->price, 2) }} MAD</p>
+                                                   </div>
 
-                                       @if($serviceDetail)
-                                           <div class="service-card border rounded-lg overflow-hidden">
-                                               @if($serviceDetail->photo)
-                                                   <img src="{{ asset('storage/' . $serviceDetail->photo) }}" alt="{{ $serviceDetail->name }}" class="w-full h-48 object-cover">
-                                               @endif
-                                               <div class="p-4">
-                                                   <div class="flex justify-between items-start">
-                                                       <div>
-                                                           <h3 class="text-lg font-semibold text-[#333333]">{{ $serviceDetail->name }}</h3>
-                                                           @if($activeCategory->name === 'animation' && isset($serviceDetail->type))
-                                                               <p class="text-sm text-gray-600 mt-1">
-                                                                   <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
-                                                                       {{ ucfirst($serviceDetail->type) }}
-                                                                   </span>
-                                                               </p>
-                                                           @endif
-                                                           @if($serviceDetail->description)
-                                                               <p class="text-sm text-gray-600 mt-2">{{ $serviceDetail->description }}</p>
-                                                           @endif
-                                                           <p class="text-[#C08081] font-medium mt-2">{{ number_format($serviceDetail->price, 2) }} MAD</p>
-                                                       </div>
-
-                                                       <div class="custom-checkbox mt-1">
-                                                           <input
-                                                               type="checkbox"
-                                                               id="{{ $activeCategory->name }}-{{ $serviceDetail->id }}"
-                                                               class="service-checkbox"
-                                                               data-type="{{ $activeCategory->name }}"
-                                                               data-id="{{ $serviceDetail->id }}"
-                                                               data-name="{{ $serviceDetail->name }}"
-                                                               data-price="{{ $serviceDetail->price }}"
-                                                           >
-                                                       </div>
+                                                   <div class="custom-radio mt-1">
+                                                       <input
+                                                           type="radio"
+                                                           name="{{ $activeCategory->name }}-selection"
+                                                           id="{{ $activeCategory->name }}-{{ $item->id }}"
+                                                           class="service-radio"
+                                                           data-type="{{ $activeCategory->name }}"
+                                                           data-id="{{ $item->id }}"
+                                                           data-name="{{ $item->name }}"
+                                                           data-price="{{ $item->price }}"
+                                                       >
                                                    </div>
                                                </div>
                                            </div>
-                                       @endif
+                                       </div>
                                    @endforeach
                                @endif
                            </div>
@@ -766,20 +822,35 @@
                            <p class="text-gray-500 text-center py-4" id="no-services-message">Aucun service sélectionné</p>
                        </div>
 
-                       <form action="{{ route('planning.traiteur.reservation.store', ['traiteurId' => $traiteur->id]) }}" method="POST" id="reservation-form">
-                           @csrf
-                           <input type="hidden" name="event_date" value="{{ $date }}">
-                           <input type="hidden" name="services_json" id="services-json" value="[]">
 
-                           <button
-                               type="submit"
-                               id="submit-reservation-btn"
-                               class="w-full bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white font-medium py-3 px-4 rounded-lg transition duration-300 opacity-50 cursor-not-allowed"
-                               disabled
-                           >
-                               Valider et continuer
-                           </button>
-                       </form>
+                       @if(session('error'))
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if(session('success'))
+                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                       <form action="{{ route('reservation.store', ['traiteurId' => $traiteur->id]) }}" method="POST" id="reservation-form">
+                        @csrf
+                        <input type="hidden" name="event_date" value="{{ $date }}">
+                        <input type="hidden" name="services_json" id="services-json" value="[]">
+                        <input type="hidden" name="nombre_invites" id="nombre_invites_hidden" value="">
+                        <input type="hidden" name="nombre_tables" id="nombre_tables_hidden" value="">
+
+                        <button
+                            type="submit"
+                            id="submit-reservation-btn"
+                            class="w-full bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white font-medium py-3 px-4 rounded-lg transition duration-300 opacity-50 cursor-not-allowed"
+                            disabled
+                        >
+                            Valider et continuer
+                        </button>
+                    </form>
                    </div>
                </div>
            </div>
@@ -804,283 +875,717 @@
        </div>
    </div>
 </div>
+
+<!-- Modal pour les erreurs de validation -->
+<div id="validationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl w-full max-w-md p-6 relative">
+        <!-- Bouton fermer -->
+        <button id="closeValidationModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <div class="text-center mb-4">
+            <div class="bg-red-100 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-red-600 mb-2">Erreur de validation</h3>
+        </div>
+
+        <div id="validationErrorMessage" class="text-gray-700 mb-6">
+
+        </div>
+
+        <div class="mt-6 text-center">
+            <button id="confirmValidationModal" class="bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                J'ai compris
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-   // Variables pour stocker les services sélectionnés
-   let selectedServices = [];
-   let totalBudget = 0;
+ document.addEventListener('DOMContentLoaded', function() {
+    // Variables pour stocker les services sélectionnés
+    let selectedServices = [];
+    let totalBudget = 0;
+    let nombreInvites = 0;
+    let nombreTables = 0;
 
-   // Éléments DOM
-   const totalBudgetElement = document.getElementById('total-budget');
-   const selectedServicesContainer = document.getElementById('selected-services');
-   const noServicesMessage = document.getElementById('no-services-message');
-   const submitReservationBtn = document.getElementById('submit-reservation-btn');
-   const servicesJsonInput = document.getElementById('services-json');
+    // Éléments DOM
+    const totalBudgetElement = document.getElementById('total-budget');
+    const selectedServicesContainer = document.getElementById('selected-services');
+    const noServicesMessage = document.getElementById('no-services-message');
+    const submitReservationBtn = document.getElementById('submit-reservation-btn');
+    const servicesJsonInput = document.getElementById('services-json');
 
-   // Gestionnaire d'événement pour les onglets de menu
-   const tabButtons = document.querySelectorAll('.tab-button');
-   tabButtons.forEach(button => {
-       button.addEventListener('click', function() {
-           // Pour les onglets de menu
-           if (this.dataset.menuId) {
-               const menuId = this.dataset.menuId;
-               const category = this.dataset.category;
+    const nombreInvitesInput = document.getElementById('nombre_invites');
+    const nombreInvitesHidden = document.getElementById('nombre_invites_hidden');
+    const nombreTablesHidden = document.getElementById('nombre_tables_hidden');
+    const tablesCountDisplay = document.getElementById('tables_count');
 
-               // Désactiver tous les onglets et contenus pour ce menu
-               document.querySelectorAll(`[data-menu-id="${menuId}"]`).forEach(tab => {
-                   tab.classList.remove('active');
-               });
+    const validationModal = document.getElementById('validationModal');
+    const closeValidationModal = document.getElementById('closeValidationModal');
+    const confirmValidationModal = document.getElementById('confirmValidationModal');
+    const validationErrorMessage = document.getElementById('validationErrorMessage');
 
-               document.querySelectorAll(`[class^="menu-items-${menuId}-"]`).forEach(content => {
-                   content.classList.add('hidden');
-               });
+    // Fonction pour afficher les erreurs de validation
+    function showValidationError(message) {
+        validationErrorMessage.innerHTML = message;
+        validationModal.classList.remove('hidden');
+    }
 
-               // Activer l'onglet cliqué et son contenu
-               this.classList.add('active');
-               document.querySelector(`.menu-items-${menuId}-${category}`).classList.remove('hidden');
-           }
-           // Pour les onglets de style (vêtements)
-           else if (this.dataset.style) {
-               const style = this.dataset.style;
+    // Fonction pour valider la sélection des services
+    function validateServiceSelection() {
+        const requiredTypes = {
+            'menu': 'Menu',
+            'menu-item': 'Menu ou Plat',
+            'salle': 'Salle',
+            'vetement': 'Vêtements',
+            'negafa': 'Négafa',
+            'maquillage': 'Maquillage',
+            'photographer': 'Photographe',
+            'decoration': 'Décoration',
+            'amariya': 'Amariya',
+            'animation': 'Animation'
+        };
 
-               // Désactiver tous les onglets et contenus
-               document.querySelectorAll('[data-style]').forEach(tab => {
-                   tab.classList.remove('active');
-               });
+        if (selectedServices.length === 0) {
+            showValidationError("Vous n'avez sélectionné aucun service. Veuillez choisir au moins un service dans chaque catégorie obligatoire.");
+            return false;
+        }
 
-               document.querySelectorAll('.style-content').forEach(content => {
-                   content.classList.add('hidden');
-               });
+        const missingTypes = [];
 
-               // Activer l'onglet cliqué et son contenu
-               this.classList.add('active');
-               document.getElementById(`${style}-content`).classList.remove('hidden');
-           }
-       });
-   });
+        // Vérifier chaque type requis
+        for (const [type, displayName] of Object.entries(requiredTypes)) {
+            let hasType = false;
 
-   // Gestionnaire d'événement pour les checkbox de services
-   const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
-   serviceCheckboxes.forEach(checkbox => {
-       checkbox.addEventListener('change', function() {
-           const type = this.dataset.type;
-           const id = this.dataset.id;
-           const name = this.dataset.name;
-           const price = parseFloat(this.dataset.price);
-           const parentId = this.dataset.parentId; // Pour les éléments de menu
+            // Vérifier si ce type est présent dans les services sélectionnés
+            for (const service of selectedServices) {
+                if (service.type === type || (type === 'menu-item' && service.type === 'menu')) {
+                    hasType = true;
+                    break;
+                }
+            }
 
-           if (this.checked) {
-               // Ajouter le service à la liste des services sélectionnés
-               selectedServices.push({
-                   type: type,
-                   id: id,
-                   name: name,
-                   price: price,
-                   parent_id: parentId
-               });
+            // Si le type est manquant, l'ajouter à la liste
+            if (!hasType && type !== 'menu') { // Exclure 'menu' de la validation car 'menu-item' est suffisant
+                missingTypes.push(displayName);
+            }
+        }
 
-               // Mettre à jour le total
-               totalBudget += price;
+        // Si des types sont manquants, afficher l'erreur
+        if (missingTypes.length > 0) {
+            const errorMessage = `Veuillez sélectionner au moins un élément dans ${missingTypes.length > 1 ? 'chacune des' : 'la'} catégorie${missingTypes.length > 1 ? 's' : ''} suivante${missingTypes.length > 1 ? 's' : ''} : <br><br><ul class="list-disc pl-5">` +
+                missingTypes.map(type => `<li>${type}</li>`).join('') +
+                '</ul>';
+            showValidationError(errorMessage);
+            return false;
+        }
 
-               // Ajouter l'élément à la liste affichée
-               addServiceToList(type, id, name, price);
-           } else {
-               // Trouver l'index du service dans le tableau
-               const index = selectedServices.findIndex(service =>
-                   service.type === type && service.id === id
-               );
+        return true;
+    }
 
-               if (index !== -1) {
-                   // Retirer le service de la liste des services sélectionnés
-                   totalBudget -= selectedServices[index].price;
-                   selectedServices.splice(index, 1);
+    // Charger les services sélectionnés précédemment depuis localStorage
+    if (localStorage.getItem('selectedServices')) {
+        try {
+            selectedServices = JSON.parse(localStorage.getItem('selectedServices'));
+            totalBudget = parseFloat(localStorage.getItem('totalBudget') || 0);
 
-                   // Retirer l'élément de la liste affichée
-                   removeServiceFromList(type, id);
-               }
-           }
+            // Mettre à jour l'affichage
+            updateTotalDisplay();
+            updateServicesJson();
 
-           // Mettre à jour l'affichage du total
-           updateTotalDisplay();
+            // Recréer les éléments visuels pour les services sélectionnés
+            if (selectedServices.length > 0) {
+                noServicesMessage.classList.add('hidden');
+                selectedServices.forEach(service => {
+                    addServiceToList(service.type, service.id, service.name, service.price);
+                });
 
-           // Mettre à jour l'input caché pour le formulaire
-           updateServicesJson();
+                // Activer le bouton de soumission
+                checkSubmitButton();
 
-           // Vérifier si des services sont sélectionnés pour activer le bouton de soumission
-           checkSubmitButton();
-       });
-   });
+                // Mettre à jour les checkboxes et radios pour refléter la sélection
+                setTimeout(() => {
+                    selectedServices.forEach(service => {
+                        // Pour les checkboxes
+                        const checkbox = document.getElementById(`${service.type}-${service.id}`);
+                        if (checkbox && checkbox.type === 'checkbox') {
+                            checkbox.checked = true;
+                        } else {
+                            // Pour les boutons radio
+                            const radio = document.getElementById(`${service.type}-${service.id}`);
+                            if (radio && radio.type === 'radio') {
+                                radio.checked = true;
+                            }
+                        }
+                    });
+                }, 100);
+            }
+        } catch (e) {
+            console.error("Erreur lors du chargement des services sélectionnés:", e);
+            // Réinitialiser en cas d'erreur
+            localStorage.removeItem('selectedServices');
+            localStorage.removeItem('totalBudget');
+        }
+    }
 
-   // Gestionnaire d'événement pour les boutons "Voir le portfolio"
-   const portfolioButtons = document.querySelectorAll('.view-portfolio-btn');
-   const portfolioModal = document.getElementById('portfolioModal');
-   const closePortfolioModal = document.getElementById('closePortfolioModal');
-   const portfolioTitle = document.getElementById('portfolioTitle');
-   const portfolioContent = document.getElementById('portfolioContent');
+    // Gestion du nombre d'invités et calcul du nombre de tables
+    nombreInvitesInput.addEventListener('input', function() {
+        nombreInvites = parseInt(this.value) || 0;
+        nombreInvitesHidden.value = nombreInvites;
 
-   portfolioButtons.forEach(button => {
-       button.addEventListener('click', function() {
-           const serviceId = this.dataset.serviceId;
-           const portfolioItems = document.getElementById(`portfolio-${serviceId}`).querySelectorAll('.portfolio-item');
+        // Calcul du nombre de tables
+        nombreTables = Math.floor(nombreInvites / 10);
+        if (nombreInvites % 10 > 5) {
+            nombreTables += 1;
+        }
 
-           // Définir le titre du modal
-           portfolioTitle.textContent = `Portfolio de ${this.closest('.service-card').querySelector('h3').textContent}`;
+        // Mise à jour des champs cachés et de l'affichage
+        nombreTablesHidden.value = nombreTables;
+        tablesCountDisplay.textContent = `(${nombreTables} tables)`;
 
-           // Vider le contenu précédent
-           portfolioContent.innerHTML = '';
+        // Mettre à jour l'affichage du budget car le prix peut dépendre du nombre d'invités/tables
+        recalculateTotalBudget();
 
-           // Remplir avec les éléments du portfolio
-           portfolioItems.forEach(item => {
-               const type = item.dataset.type;
-               const path = item.dataset.path;
-               const title = item.dataset.title;
-               const description = item.dataset.description;
+        // Vérifier la disponibilité des salles
+        checkSalleTables();
 
-               const galleryItem = document.createElement('div');
-               galleryItem.className = 'gallery-item';
+        // Sauvegarder dans localStorage
+        localStorage.setItem('nombreInvites', nombreInvites);
+        localStorage.setItem('nombreTables', nombreTables);
+    });
 
-               if (type === 'image') {
-                   galleryItem.innerHTML = `
-                       <img src="${path}" alt="${title || 'Image de portfolio'}">
-                       ${title ? `<div class="p-2 text-sm font-medium">${title}</div>` : ''}
-                       ${description ? `<div class="p-2 text-xs text-gray-600">${description}</div>` : ''}
-                   `;
-               } else if (type === 'video') {
-                   galleryItem.innerHTML = `
-                       <video src="${path}" controls class="w-full h-auto"></video>
-                       ${title ? `<div class="p-2 text-sm font-medium">${title}</div>` : ''}
-                       ${description ? `<div class="p-2 text-xs text-gray-600">${description}</div>` : ''}
-                   `;
-               }
+    // Charger les valeurs depuis localStorage
+    if (localStorage.getItem('nombreInvites')) {
+        nombreInvites = parseInt(localStorage.getItem('nombreInvites'));
+        nombreTables = parseInt(localStorage.getItem('nombreTables')) || 0;
 
-               portfolioContent.appendChild(galleryItem);
-           });
+        nombreInvitesInput.value = nombreInvites;
+        nombreInvitesHidden.value = nombreInvites;
+        nombreTablesHidden.value = nombreTables;
+        tablesCountDisplay.textContent = `(${nombreTables} tables)`;
+    }
 
-           // Afficher le modal
-           portfolioModal.classList.remove('hidden');
-       });
-   });
+    // Fonction pour vérifier si les salles ont assez de tables
+    function checkSalleTables() {
+        const salleRadios = document.querySelectorAll('input[data-type="salle"]');
 
-   // Fermer le modal de portfolio
-   closePortfolioModal.addEventListener('click', function() {
-       portfolioModal.classList.add('hidden');
-   });
+        salleRadios.forEach(radio => {
+            const salleTableCount = parseInt(radio.dataset.tables) || 0;
 
-   // Fonction pour ajouter un service à la liste affichée
-   function addServiceToList(type, id, name, price) {
-       // Cacher le message "Aucun service sélectionné"
-       noServicesMessage.classList.add('hidden');
+            if (salleTableCount < nombreTables) {
+                // Désactiver la salle si elle n'a pas assez de tables
+                radio.disabled = true;
+                radio.parentElement.parentElement.parentElement.parentElement.classList.add('opacity-50');
 
-       // Créer l'élément pour le service
-       const serviceElement = document.createElement('div');
-       serviceElement.className = 'budget-item flex justify-between items-center p-3 bg-gray-50 rounded-lg selected-animation';
-       serviceElement.id = `service-item-${type}-${id}`;
-       serviceElement.innerHTML = `
-           <span class="text-gray-700">${name}</span>
-           <div class="flex items-center">
-               <span class="font-medium text-[#C08081] mr-3">${price.toFixed(2)} MAD</span>
-               <button
-                   class="text-gray-400 hover:text-red-500 remove-service"
-                   data-type="${type}"
-                   data-id="${id}"
-               >
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                   </svg>
-               </button>
-           </div>
-       `;
+                // Si cette salle était sélectionnée, la désélectionner
+                if (radio.checked) {
+                    radio.checked = false;
 
-       // Ajouter l'élément au conteneur
-       selectedServicesContainer.appendChild(serviceElement);
+                    // Retirer de la liste des services sélectionnés
+                    const index = selectedServices.findIndex(service =>
+                        service.type === "salle" && service.id === radio.dataset.id
+                    );
 
-       // Ajouter l'événement pour le bouton de suppression
-       serviceElement.querySelector('.remove-service').addEventListener('click', function() {
-           const type = this.dataset.type;
-           const id = this.dataset.id;
+                    if (index !== -1) {
+                        totalBudget -= selectedServices[index].price;
+                        removeServiceFromList("salle", radio.dataset.id);
+                        selectedServices.splice(index, 1);
 
-           // Décocher la checkbox
-           const checkbox = document.getElementById(`${type}-${id}`);
-           if (checkbox) {
-               checkbox.checked = false;
+                        // Mettre à jour l'affichage et le stockage
+                        updateTotalDisplay();
+                        updateServicesJson();
+                        localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                        localStorage.setItem('totalBudget', totalBudget.toString());
+                    }
+                }
+            } else {
+                radio.disabled = false;
+                radio.parentElement.parentElement.parentElement.parentElement.classList.remove('opacity-50');
+            }
+        });
+    }
 
-               // Déclencher l'événement change pour mettre à jour la liste
-               const event = new Event('change');
-               checkbox.dispatchEvent(event);
-           } else {
-               // Si on ne trouve pas la checkbox (cas rare), on retire manuellement
-               removeServiceFromList(type, id);
+    // Fonction pour recalculer le budget total basé sur le nombre d'invités/tables
+    function recalculateTotalBudget() {
+        totalBudget = 0;
 
-               // Trouver l'index du service dans le tableau et le supprimer
-               const index = selectedServices.findIndex(service =>
-                   service.type === type && service.id === id
-               );
+        // Recalculer le prix pour chaque service
+        selectedServices.forEach(service => {
+            let price = parseFloat(service.originalPrice || service.price);
 
-               if (index !== -1) {
-                   totalBudget -= selectedServices[index].price;
-                   selectedServices.splice(index, 1);
+            // Ajuster le prix selon les règles
+            if (service.type === 'menu-item') {
+                if (service.category === 'plat') {
+                    // Prix x nombre de tables pour les plats
+                    price *= nombreTables;
+                } else {
+                    // Prix x nombre d'invités pour les autres items du menu
+                    price *= nombreInvites;
+                }
+            }
 
-                   // Mettre à jour l'affichage du total et le JSON
-                   updateTotalDisplay();
-                   updateServicesJson();
-                   checkSubmitButton();
-               }
-           }
-       });
-   }
+            // Mettre à jour le prix dans l'objet service
+            service.price = price;
+            totalBudget += price;
+        });
 
-   // Fonction pour retirer un service de la liste affichée
-   function removeServiceFromList(type, id) {
-       const serviceElement = document.getElementById(`service-item-${type}-${id}`);
-       if (serviceElement) {
-           serviceElement.remove();
-       }
+        // Mettre à jour l'affichage
+        updateTotalDisplay();
+        updateServicesJson();
+        localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        localStorage.setItem('totalBudget', totalBudget.toString());
+    }
 
-       // Afficher le message "Aucun service sélectionné" si la liste est vide
-       if (selectedServices.length === 0) {
-           noServicesMessage.classList.remove('hidden');
-       }
-   }
+    // Gestionnaire d'événement pour les onglets de menu
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Pour les onglets de menu
+            if (this.dataset.menuId) {
+                const menuId = this.dataset.menuId;
+                const category = this.dataset.category;
 
-   // Fonction pour mettre à jour l'affichage du total
-   function updateTotalDisplay() {
-       totalBudgetElement.textContent = `${totalBudget.toFixed(2)} MAD`;
+                // Désactiver tous les onglets et contenus pour ce menu
+                document.querySelectorAll(`[data-menu-id="${menuId}"]`).forEach(tab => {
+                    tab.classList.remove('active');
+                });
 
-       // Ajouter un effet visuel pour le changement
-       totalBudgetElement.classList.add('text-[#C08081]', 'font-bold');
+                document.querySelectorAll(`[class^="menu-items-${menuId}-"]`).forEach(content => {
+                    content.classList.add('hidden');
+                });
 
-       setTimeout(() => {
-           totalBudgetElement.classList.remove('text-[#C08081]', 'font-bold');
-       }, 300);
-   }
+                // Activer l'onglet cliqué et son contenu
+                this.classList.add('active');
+                document.querySelector(`.menu-items-${menuId}-${category}`).classList.remove('hidden');
+            }
+            // Pour les onglets de style (vêtements)
+            else if (this.dataset.style) {
+                const style = this.dataset.style;
 
-   // Fonction pour mettre à jour l'input JSON pour le formulaire
-   function updateServicesJson() {
-       servicesJsonInput.value = JSON.stringify(selectedServices);
-   }
+                // Désactiver tous les onglets et contenus
+                document.querySelectorAll('[data-style]').forEach(tab => {
+                    tab.classList.remove('active');
+                });
 
-   // Fonction pour vérifier si le bouton de soumission doit être activé
-   function checkSubmitButton() {
-       if (selectedServices.length > 0) {
-           submitReservationBtn.disabled = false;
-           submitReservationBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-       } else {
-           submitReservationBtn.disabled = true;
-           submitReservationBtn.classList.add('opacity-50', 'cursor-not-allowed');
-       }
-   }
+                document.querySelectorAll('.style-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
 
-   // Validation du formulaire avant soumission
-   document.getElementById('reservation-form').addEventListener('submit', function(e) {
-       if (selectedServices.length === 0) {
-        e.preventDefault();
-           alert('Veuillez sélectionner au moins un service avant de continuer.');
-       }
-   });
+                // Activer l'onglet cliqué et son contenu
+                this.classList.add('active');
+                document.getElementById(`${style}-content`).classList.remove('hidden');
+            }
+        });
+    });
+
+    // Gestionnaire d'événement pour les checkboxes de services
+    const serviceCheckboxes = document.querySelectorAll('.service-checkbox');
+    serviceCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleServiceSelection(this, false);
+        });
+    });
+
+    // Gestionnaire d'événement pour les boutons radio de services
+    const serviceRadios = document.querySelectorAll('.service-radio');
+    serviceRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            handleServiceSelection(this, true);
+        });
+    });
+
+    // Fonction pour gérer la sélection des services (checkbox ou radio)
+    function handleServiceSelection(element, isRadio) {
+        const type = element.dataset.type;
+        const id = element.dataset.id;
+        const name = element.dataset.name;
+        const price = parseFloat(element.dataset.price);
+        const parentId = element.dataset.parentId;
+        const tables = element.dataset.tables;
+        const category = element.dataset.category; // Pour les items de menu
+
+        // Vérifier les limites de sélection
+        if (element.checked) {
+            // Vérifications des limites avant d'ajouter
+            let canAdd = true;
+
+            if (type === 'menu-item' && category === 'plat') {
+                // Vérifier le nombre de plats
+                const platsCount = selectedServices.filter(s => s.type === 'menu-item' && s.category === 'plat').length;
+                if (platsCount >= 2) {
+                    alert('Vous ne pouvez sélectionner que 2 plats maximum.');
+                    element.checked = false;
+                    return;
+                }
+            } else if (type === 'vetement') {
+                // Vérifier les limites pour les vêtements
+                const isRobe = element.dataset.subtype === 'robe_mariee';
+                const isCostume = element.dataset.subtype === 'costume_homme';
+
+                if (isRobe) {
+                    const robesCount = selectedServices.filter(s => s.type === 'vetement' && s.subtype === 'robe_mariee').length;
+                    if (robesCount >= 2) {
+                        alert('Vous ne pouvez sélectionner que 2 robes maximum.');
+                        element.checked = false;
+                        return;
+                    }
+                } else if (isCostume) {
+                    const costumesCount = selectedServices.filter(s => s.type === 'vetement' && s.subtype === 'costume_homme').length;
+                    if (costumesCount >= 2) {
+                        alert('Vous ne pouvez sélectionner que 2 costumes maximum.');
+                        element.checked = false;
+                        return;
+                    }
+                }
+            } else if (type === 'amariya') {
+                // Vérifier la limite des amariya
+                const amariyasCount = selectedServices.filter(s => s.type === 'amariya').length;
+                if (amariyasCount >= 2) {
+                    alert('Vous ne pouvez sélectionner que 2 amariyas maximum.');
+                    element.checked = false;
+                    return;
+                }
+            } else if (type === 'animation') {
+                // Vérifier la limite des animations
+                const animationsCount = selectedServices.filter(s => s.type === 'animation').length;
+                if (animationsCount >= 2) {
+                    alert('Vous ne pouvez sélectionner que 2 animations maximum.');
+                    element.checked = false;
+                    return;
+                }
+            }
+
+            // Si c'est un radio, on retire d'abord tous les autres services du même type
+            if (isRadio) {
+                const existingServices = selectedServices.filter(service => service.type === type);
+
+                existingServices.forEach(service => {
+                    // Retirer du budget total
+                    totalBudget -= service.price;
+
+                    // Retirer de la liste affichée
+                    removeServiceFromList(service.type, service.id);
+
+                    // Retirer du tableau des services sélectionnés
+                    const index = selectedServices.findIndex(s =>
+                        s.type === service.type && s.id === service.id
+                    );
+
+                    if (index !== -1) {
+                        selectedServices.splice(index, 1);
+                    }
+                });
+            }
+
+            // Ajouter le service à la liste des services sélectionnés
+            let adjustedPrice = price;
+
+            // Ajuster le prix selon les règles
+            if (type === 'menu-item') {
+                if (category === 'plat') {
+                    // Prix x nombre de tables pour les plats
+                    adjustedPrice *= nombreTables;
+                } else {
+                    // Prix x nombre d'invités pour les autres items du menu
+                    adjustedPrice *= nombreInvites;
+                }
+            }
+
+            const serviceData = {
+                type: type,
+                id: id,
+                name: name,
+                originalPrice: price,
+                price: adjustedPrice,
+                parent_id: parentId,
+                tables: tables,
+                category: category,
+                subtype: element.dataset.subtype
+            };
+
+            selectedServices.push(serviceData);
+
+            // Mettre à jour le total
+            totalBudget += adjustedPrice;
+
+            // Ajouter l'élément à la liste affichée
+            addServiceToList(type, id, name, adjustedPrice);
+        } else {
+            // Seulement pour les checkboxes (les radios ne peuvent pas être décochés directement)
+            // Trouver l'index du service dans le tableau
+            const index = selectedServices.findIndex(service =>
+                service.type === type && service.id === id
+            );
+
+            if (index !== -1) {
+                // Retirer le service de la liste des services sélectionnés
+                totalBudget -= selectedServices[index].price;
+                selectedServices.splice(index, 1);
+
+                // Retirer l'élément de la liste affichée
+                removeServiceFromList(type, id);
+            }
+        }
+
+        // Mettre à jour l'affichage du total
+        updateTotalDisplay();
+
+        // Mettre à jour l'input caché pour le formulaire
+        updateServicesJson();
+
+        // Sauvegarder dans localStorage
+        localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+        localStorage.setItem('totalBudget', totalBudget.toString());
+
+        // Vérifier si des services sont sélectionnés pour activer le bouton de soumission
+        checkSubmitButton();
+    }
+
+    // Gestionnaire d'événement pour les boutons "Voir le portfolio"
+    const portfolioButtons = document.querySelectorAll('.view-portfolio-btn');
+    const portfolioModal = document.getElementById('portfolioModal');
+    const closePortfolioModal = document.getElementById('closePortfolioModal');
+    const portfolioTitle = document.getElementById('portfolioTitle');
+    const portfolioContent = document.getElementById('portfolioContent');
+
+    portfolioButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const serviceId = this.dataset.serviceId;
+            const portfolioItems = document.getElementById(`portfolio-${serviceId}`).querySelectorAll('.portfolio-item');
+
+            // Définir le titre du modal
+            portfolioTitle.textContent = `Portfolio de ${this.closest('.service-card').querySelector('h3').textContent}`;
+
+            // Vider le contenu précédent
+            portfolioContent.innerHTML = '';
+
+            // Remplir avec les éléments du portfolio
+            portfolioItems.forEach(item => {
+                const type = item.dataset.type;
+                const path = item.dataset.path;
+                const title = item.dataset.title || '';
+                const description = item.dataset.description || '';
+
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+
+                if (type === 'image') {
+                    galleryItem.innerHTML = `
+                        <img src="${path}" alt="${title || 'Image de portfolio'}">
+                        ${title ? `<div class="p-2 text-sm font-medium">${title}</div>` : ''}
+                        ${description ? `<div class="p-2 text-xs text-gray-600">${description}</div>` : ''}
+                    `;
+                } else if (type === 'video') {
+                    galleryItem.innerHTML = `
+                        <video src="${path}" controls class="w-full h-auto"></video>
+                        ${title ? `<div class="p-2 text-sm font-medium">${title}</div>` : ''}
+                        ${description ? `<div class="p-2 text-xs text-gray-600">${description}</div>` : ''}
+                    `;
+                }
+
+                portfolioContent.appendChild(galleryItem);
+            });
+
+            // Afficher le modal
+            portfolioModal.classList.remove('hidden');
+        });
+    });
+
+    // Fermer le modal de portfolio
+    closePortfolioModal.addEventListener('click', function() {
+        portfolioModal.classList.add('hidden');
+    });
+
+    // Fonction pour ajouter un service à la liste affichée
+    function addServiceToList(type, id, name, price) {
+        // Cacher le message "Aucun service sélectionné"
+        noServicesMessage.classList.add('hidden');
+
+        // Vérifier si le service existe déjà dans la liste
+        const existingElement = document.getElementById(`service-item-${type}-${id}`);
+        if (existingElement) {
+            return; // Éviter les doublons
+        }
+
+        // Créer l'élément pour le service
+        const serviceElement = document.createElement('div');
+        serviceElement.className = 'budget-item flex justify-between items-center p-3 bg-gray-50 rounded-lg selected-animation';
+        serviceElement.id = `service-item-${type}-${id}`;
+        serviceElement.innerHTML = `
+            <span class="text-gray-700">${name}</span>
+            <div class="flex items-center">
+                <span class="font-medium text-[#C08081] mr-3">${price.toFixed(2)} MAD</span>
+                <button
+                    class="text-gray-400 hover:text-red-500 remove-service"
+                    data-type="${type}"
+                    data-id="${id}"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        // Ajouter l'élément au conteneur
+        selectedServicesContainer.appendChild(serviceElement);
+
+        // Ajouter l'événement pour le bouton de suppression
+        serviceElement.querySelector('.remove-service').addEventListener('click', function() {
+            const type = this.dataset.type;
+            const id = this.dataset.id;
+
+            // Décocher la checkbox ou le radio
+            const input = document.getElementById(`${type}-${id}`) || document.getElementById(`item-${id}`);
+            if (input) {
+                input.checked = false;
+
+                if (input.type === 'checkbox') {
+                    // Déclencher l'événement change pour les checkboxes
+                    const event = new Event('change');
+                    input.dispatchEvent(event);
+                } else if (input.type === 'radio') {
+                    // Pour les radios, on doit faire la mise à jour manuellement
+                    // Trouver l'index du service dans le tableau
+                    const index = selectedServices.findIndex(service =>
+                        service.type === type && service.id === id
+                    );
+
+                    if (index !== -1) {
+                        totalBudget -= selectedServices[index].price;
+                        selectedServices.splice(index, 1);
+
+                        // Mettre à jour l'affichage du total et le JSON
+                        updateTotalDisplay();
+                        updateServicesJson();
+
+                        // Sauvegarder dans localStorage
+                        localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                        localStorage.setItem('totalBudget', totalBudget.toString());
+
+                        // Retirer l'élément de la liste
+                        removeServiceFromList(type, id);
+
+                        checkSubmitButton();
+                    }
+                }
+            } else {
+                // Si on ne trouve pas l'input, on retire manuellement
+                removeServiceFromList(type, id);
+
+                // Trouver l'index du service dans le tableau et le supprimer
+                const index = selectedServices.findIndex(service =>
+                    service.type === type && service.id === id
+                );
+
+                if (index !== -1) {
+                    totalBudget -= selectedServices[index].price;
+                    selectedServices.splice(index, 1);
+
+                    // Mettre à jour l'affichage du total et le JSON
+                    updateTotalDisplay();
+                    updateServicesJson();
+
+                    // Sauvegarder dans localStorage
+                    localStorage.setItem('selectedServices', JSON.stringify(selectedServices));
+                    localStorage.setItem('totalBudget', totalBudget.toString());
+
+                    checkSubmitButton();
+                }
+            }
+        });
+    }
+
+    // Fonction pour retirer un service de la liste affichée
+    function removeServiceFromList(type, id) {
+        const serviceElement = document.getElementById(`service-item-${type}-${id}`);
+        if (serviceElement) {
+            serviceElement.remove();
+        }
+
+        // Afficher le message "Aucun service sélectionné" si la liste est vide
+        if (selectedServices.length === 0) {
+            noServicesMessage.classList.remove('hidden');
+        }
+    }
+
+    // Fonction pour mettre à jour l'affichage du total
+    function updateTotalDisplay() {
+        totalBudgetElement.textContent = `${totalBudget.toFixed(2)} MAD`;
+
+        // Ajouter un effet visuel pour le changement
+        totalBudgetElement.classList.add('text-[#C08081]', 'font-bold');
+
+        setTimeout(() => {
+            totalBudgetElement.classList.remove('text-[#C08081]', 'font-bold');
+        }, 300);
+    }
+
+    // Fonction pour mettre à jour l'input JSON pour le formulaire
+    function updateServicesJson() {
+        servicesJsonInput.value = JSON.stringify(selectedServices);
+    }
+
+    // Fonction pour vérifier si le bouton de soumission doit être activé
+    function checkSubmitButton() {
+        if (selectedServices.length > 0) {
+            submitReservationBtn.disabled = false;
+            submitReservationBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            submitReservationBtn.disabled = true;
+            submitReservationBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    // Initialiser la vérification des salles au chargement de la page
+    checkSalleTables();
+
+    // Validation du formulaire avant soumission
+    document.getElementById('reservation-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Empêcher la soumission par défaut
+
+        // Vérifier le nombre d'invités
+        if (!nombreInvites || nombreInvites <= 0) {
+            showValidationError('Veuillez indiquer le nombre d\'invités.');
+            return;
+        }
+
+        // Valider la sélection des services
+        if (!validateServiceSelection()) {
+            return; // Arrêter si la validation échoue
+        }
+
+        // Mettre à jour les champs cachés avant la soumission
+        nombreInvitesHidden.value = nombreInvites;
+        nombreTablesHidden.value = nombreTables;
+
+        // Si tout est valide, soumettre le formulaire
+        this.submit();
+
+        // Effacer le localStorage
+        localStorage.removeItem('selectedServices');
+        localStorage.removeItem('totalBudget');
+        localStorage.removeItem('nombreInvites');
+        localStorage.removeItem('nombreTables');
+    });
+
+    // Gestionnaires pour le modal de validation
+    closeValidationModal.addEventListener('click', function() {
+        validationModal.classList.add('hidden');
+    });
+
+    confirmValidationModal.addEventListener('click', function() {
+        validationModal.classList.add('hidden');
+    });
 });
 </script>
 @endsection
-

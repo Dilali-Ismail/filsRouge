@@ -13,6 +13,8 @@ class Reservation extends Model
         'mariee_id',
         'traiteur_id',
         'event_date',
+        'nombre_invites',
+        'nombre_tables',
         'total_amount',
         'status'
     ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Salle;
+use App\Models\Makeup;
 use App\Models\Negafa;
 use App\Models\Amariya;
 use App\Models\Service;
@@ -17,8 +18,11 @@ use App\Models\Photographer;
 use Illuminate\Http\Request;
 use App\Models\ServiceCategory;
 use App\Models\ReservationService;
+use App\Models\MakeupPortfolioItem;
+use App\Models\NegafaPortfolioItem;
 use App\Models\TraiteurAvailability;
 use Illuminate\Support\Facades\Auth;
+use App\Models\PhotographerPortfolioItem;
 
 class PlanningController extends Controller
 {
@@ -127,168 +131,88 @@ public function services(Request $request, $traiteurId)
 
     $categories = ServiceCategory::all();
 
-    $activeCategory = $categories->where('name', 'menu')->first() ?? $categories->first();
+    // Déterminer la catégorie active (par défaut ou sélectionnée)
+    $activeCategoryName = $request->get('category', 'menu');
+    $activeCategory = $categories->where('name', $activeCategoryName)->first() ?? $categories->first();
+
+    // Variable pour stocker les données spécifiques à la catégorie
+    $categoryData = [];
+
 
     $services = Service::where('traiteur_id', $traiteurId)
     ->where('category_id', $activeCategory->id)
-    ->with(['menuItems'])
     ->get();
 
-    return view('planning.services', compact('traiteur', 'date', 'categories', 'activeCategory', 'services'));
+
+    switch($activeCategory->name) {
+        case 'menu':
+            // Pour les menus, on charge les items associés
+            $services->load('menuItems');
+            break;
+
+        case 'vetements':
+            // Pour les vêtements, on récupère les items directement
+            $categoryData['clothingItems'] = Clothing::whereIn('service_id', $services->pluck('id'))->get();
+            break;
+
+        case 'negafa':
+            // Récupérer toutes les négafas associées aux services
+            $negafas = Negafa::whereIn('service_id', $services->pluck('id'))->get();
+
+            // Pour chaque négafa, charger son portfolio
+            foreach ($negafas as $negafa) {
+                $negafa->portfolioItems = NegafaPortfolioItem::where('negafa_id', $negafa->id)->get();
+            }
+
+            $categoryData['negafas'] = $negafas;
+            break;
+
+        case 'maquillage':
+            // Similaire pour maquillage
+            $makeups = Makeup::whereIn('service_id', $services->pluck('id'))->get();
+
+            foreach ($makeups as $makeup) {
+                $makeup->portfolioItems = MakeupPortfolioItem::where('makeup_id', $makeup->id)->get();
+            }
+
+            $categoryData['makeups'] = $makeups;
+            break;
+
+        case 'photographer':
+            // Similaire pour photographes
+            $photographers = Photographer::whereIn('service_id', $services->pluck('id'))->get();
+
+            foreach ($photographers as $photographer) {
+                $photographer->portfolioItems = PhotographerPortfolioItem::where('photographer_id', $photographer->id)->get();
+            }
+
+            $categoryData['photographers'] = $photographers;
+            break;
+
+        case 'salles':
+            // Pour les salles
+            $categoryData['salles'] = Salle::whereIn('service_id', $services->pluck('id'))->get();
+            break;
+
+        case 'decoration':
+            // Pour les décorations
+            $categoryData['decorations'] = Decoration::whereIn('service_id', $services->pluck('id'))->get();
+            break;
+
+        case 'amariya':
+            // Pour les amariyas
+            $categoryData['amariyas'] = Amariya::whereIn('service_id', $services->pluck('id'))->get();
+            break;
+
+        case 'animation':
+            // Pour les animations
+            $categoryData['animations'] = Animation::whereIn('service_id', $services->pluck('id'))->get();
+            break;
+    }
+
+    return view('planning.services', compact('traiteur', 'date', 'categories', 'activeCategory', 'services' ,'categoryData'));
 }
 
-public function storeReservation(Request $request, $traiteurId)
-{
 
-    if (!Auth::user()->isMariee()) {
-        return redirect()->route('welcome')->with('error', 'Accès réservé aux mariées.');
-    }
-
-
-    $request->validate([
-        'event_date' => 'required|date_format:Y-m-d',
-        'serivces_json' => 'required|json',
-    ]);
-
-
-    $traiteur = Traiteur::findOrFail($traiteurId);
-
-
-    $services = json_decode($request->services_json, true);
-
-
-    $totalAmount = 0;
-    foreach ($services as $service) {
-        $totalAmount += floatval($service['price']);
-    }
-
-
-    $reservation = Reservation::create([
-        'mariee_id' => Auth::user()->mariee->id,
-        'traiteur_id' => $traiteur->id,
-        'event_date' => $request->event_date,
-        'total_amount' => $totalAmount,
-        'status' => 'pending'
-    ]);
-
-
-    foreach ($services as $service) {
-        // Déterminer le type de service et son modèle
-        $serviceType = $service['type'];
-        $serviceId = $service['id'];
-        $serviceItemType = null;
-        $serviceItemId = null;
-        $relatedServiceId = null;
-
-        // Traiter selon le type de service
-        switch ($serviceType) {
-            case 'menu':
-                // Pour un menu complet
-                $serviceObj = Service::find($serviceId);
-                if ($serviceObj) {
-                    $relatedServiceId = $serviceObj->id;
-                }
-                break;
-
-            case 'menu-item':
-                // Pour un item de menu spécifique
-                $menuItem = MenuItem::find($serviceId);
-                if ($menuItem) {
-                    $relatedServiceId = $menuItem->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\MenuItem';
-                }
-                break;
-
-            case 'vetement':
-                // Pour un vêtement
-                $clothing = Clothing::find($serviceId);
-                if ($clothing) {
-                    $relatedServiceId = $clothing->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\ClothingItem';
-                }
-                break;
-
-            case 'negafa':
-                $negafa = Negafa::find($serviceId);
-                if ($negafa) {
-                    $relatedServiceId = $negafa->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Negafa';
-                }
-                break;
-
-            case 'maquillage':
-                $makeup = Makeup::find($serviceId);
-                if ($makeup) {
-                    $relatedServiceId = $makeup->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Makeup';
-                }
-                break;
-
-            case 'photographer':
-                $photographer = Photographer::find($serviceId);
-                if ($photographer) {
-                    $relatedServiceId = $photographer->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Photographer';
-                }
-                break;
-
-            case 'salle':
-                $salle = Salle::find($serviceId);
-                if ($salle) {
-                    $relatedServiceId = $salle->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Salle';
-                }
-                break;
-
-            case 'decoration':
-                $decoration = Decoration::find($serviceId);
-                if ($decoration) {
-                    $relatedServiceId = $decoration->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Decoration';
-                }
-                break;
-
-            case 'amariya':
-                $amariya = Amariya::find($serviceId);
-                if ($amariya) {
-                    $relatedServiceId = $amariya->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Amariya';
-                }
-                break;
-
-            case 'animation':
-                $animation = Animation::find($serviceId);
-                if ($animation) {
-                    $relatedServiceId = $animation->service_id;
-                    $serviceItemId = $serviceId;
-                    $serviceItemType = 'App\\Models\\Animation';
-                }
-                break;
-        }
-
-        
-        if ($relatedServiceId) {
-            ReservationService::create([
-                'reservation_id' => $reservation->id,
-                'service_id' => $relatedServiceId,
-                'service_item_id' => $serviceItemId,
-                'service_item_type' => $serviceItemType,
-                'price' => $service['price'],
-                'quantity' => 1
-            ]);
-        }
-    }
-
-
-    return redirect()->route('planning.traiteur.payment', ['reservation' => $reservation->id]);
-}
 
 }
