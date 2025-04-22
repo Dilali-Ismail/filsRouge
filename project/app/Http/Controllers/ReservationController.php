@@ -174,4 +174,7 @@ class ReservationController extends Controller
     return redirect()->route('planning.index')
                      ->with('success', 'Votre réservation a été enregistrée. Procédez au paiement.');
 }
+
+
+
 }
