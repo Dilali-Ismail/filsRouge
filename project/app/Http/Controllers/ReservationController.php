@@ -171,8 +171,8 @@ class ReservationController extends Controller
     }
 
     // Rediriger vers la page de paiement
-    return redirect()->route('planning.index')
-                     ->with('success', 'Votre réservation a été enregistrée. Procédez au paiement.');
+    return redirect()->route('payment.show', ['reservation' => $reservation->id])
+                     ->with('success', 'Votre réservation a été enregistrée. Veuillez procéder au paiement.');
 }
 
 

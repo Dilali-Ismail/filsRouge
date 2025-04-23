@@ -363,4 +363,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/payment/{reservation}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::post('/payment/{reservation}/session', [PaymentController::class, 'createSession'])->name('payment.create.session');
+    Route::get('/payment/{reservation}/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/{reservation}/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+});
+
 
