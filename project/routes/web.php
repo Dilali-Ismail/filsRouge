@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\Auth\AuthController;
@@ -378,3 +379,8 @@ Route::post('/traiteur/availability', [AvailabilityController::class, 'store'])-
 Route::get('/traiteur/reservation/{reservation}/pdf', [TraiteurReservationsController::class, 'downloadPdf'])->name('traiteur.reservation.pdf');
 
 
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::post('/traiteurs/{id}/verify', [AdminController::class, 'verifyTraiteur'])->name('traiteurs.verify');
+    Route::delete('/traiteurs/{id}/reject', [AdminController::class, 'rejectTraiteur'])->name('traiteurs.reject');
+});
