@@ -32,8 +32,10 @@ class Reservation extends Model
         return $this->belongsTo(Traiteur::class);
     }
 
-    public function services(){
-        return $this->hasMany(Service::class);
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'reservation_services')
+                    ->withPivot('service_item_id', 'service_item_type', 'price', 'quantity');
     }
 
     public function payments(){

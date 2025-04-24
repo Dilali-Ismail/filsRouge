@@ -7,11 +7,17 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     nodejs \
-    npm && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    npm \
+    # Dépendances pour GD
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Installation des extensions PHP
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql gd
 
 # Installation de Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -32,7 +38,6 @@ RUN { \
 
 # Définition du répertoire de travail
 WORKDIR /var/www/html
-
 
 # Lancement d'Apache
 CMD ["apache2-foreground"]

@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\TraiteurMenuController;
 use App\Http\Controllers\TraiteurSalleController;
 use App\Http\Controllers\TraiteurMakeupController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\TraiteurAnimationController;
 use App\Http\Controllers\TraiteurDecorationController;
 use App\Http\Controllers\TraiteurPhotographerController;
+use App\Http\Controllers\TraiteurReservationsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
@@ -359,7 +361,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/planning/traiteur/{traiteurId}/check-date', [App\Http\Controllers\PlanningController::class, 'checkDateAvailability'])->name('planning.traiteur.check-date');
     Route::get('/traiteur/{traiteurId}/services', [PlanningController::class, 'services'])->name('planning.traiteur.services');
     Route::post('/traiteur/{traiteurId}/reservation', [ReservationController::class, 'store'])->name('reservation.store');
-    
+
 
 });
 
@@ -369,5 +371,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payment/{reservation}/success', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/payment/{reservation}/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 });
+
+// Nouvelles routes pour les réservations et disponibilités
+Route::get('/reservations', [TraiteurReservationsController::class, 'index'])->name('traiteur.reservations');
+Route::post('/traiteur/availability', [AvailabilityController::class, 'store'])->name('traiteur.availability.store');
+Route::get('/traiteur/reservation/{reservation}/pdf', [TraiteurReservationsController::class, 'downloadPdf'])->name('traiteur.reservation.pdf');
 
 

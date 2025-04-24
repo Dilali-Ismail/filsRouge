@@ -124,7 +124,7 @@ class PaymentController extends Controller
     if ($request->has('session_id')) {
         try {
             // Log pour le débogage
-            \Log::info('Vérification de la session: ' . $request->session_id);
+            Log::info('Vérification de la session: ' . $request->session_id);
 
             // Récupération des détails de la session via l'API Stripe
             $response = Http::withHeaders([
@@ -133,7 +133,7 @@ class PaymentController extends Controller
 
             if ($response->successful()) {
                 $sessionData = $response->json();
-                \Log::info('Données de session Stripe: ' . json_encode($sessionData));
+                Log::info('Données de session Stripe: ' . json_encode($sessionData));
 
                 // Récupère le paiement associé
                 $payment = Payment::where('reservation_id', $reservation->id)
@@ -142,19 +142,19 @@ class PaymentController extends Controller
 
                 // Si le paiement n'est pas trouvé, on vérifie tous les paiements pour cette réservation
                 if (!$payment) {
-                    \Log::warning('Paiement non trouvé avec session_id exact, vérification des paiements de la réservation #' . $reservation->id);
+                    Log::warning('Paiement non trouvé avec session_id exact, vérification des paiements de la réservation #' . $reservation->id);
 
                     // Récupérer tous les paiements en attente pour cette réservation
                     $payments = Payment::where('reservation_id', $reservation->id)
                                     ->where('status', 'pending')
                                     ->get();
 
-                    \Log::info('Paiements trouvés: ' . $payments->count());
+                    Log::info('Paiements trouvés: ' . $payments->count());
 
                     // Utiliser le paiement le plus récent si disponible
                     if ($payments->count() > 0) {
                         $payment = $payments->sortByDesc('created_at')->first();
-                        \Log::info('Utilisation du paiement #' . $payment->id . ' (le plus récent)');
+                        Log::info('Utilisation du paiement #' . $payment->id . ' (le plus récent)');
                     } else {
                         // Créer un nouveau paiement si aucun n'existe
                         $payment = Payment::create([
@@ -164,7 +164,7 @@ class PaymentController extends Controller
                             'payment_method' => 'stripe',
                             'payment_details' => json_encode(['session_id' => $request->session_id])
                         ]);
-                        \Log::info('Nouveau paiement créé #' . $payment->id);
+                        Log::info('Nouveau paiement créé #' . $payment->id);
                     }
                 }
 
