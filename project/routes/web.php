@@ -384,3 +384,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/traiteurs/{id}/verify', [AdminController::class, 'verifyTraiteur'])->name('traiteurs.verify');
     Route::delete('/traiteurs/{id}/reject', [AdminController::class, 'rejectTraiteur'])->name('traiteurs.reject');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/messagerie', [App\Http\Controllers\MessageController::class, 'index'])->name('messagerie');
+    Route::get('/conversations/{conversation}/messages', [App\Http\Controllers\MessageController::class, 'getMessages']);
+    Route::post('/conversations/{conversation}/messages', [App\Http\Controllers\MessageController::class, 'sendMessage']);
+    Route::post('/conversations', [App\Http\Controllers\MessageController::class, 'createConversation']);
+});
