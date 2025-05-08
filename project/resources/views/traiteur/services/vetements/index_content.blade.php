@@ -25,7 +25,7 @@
         <!-- Carte Vêtements Modernes -->
         <a href="{{ route('traiteur.services.vetements.modern') }}" class="group">
             <div class="relative h-60 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 transform group-hover:-translate-y-1">
-                <img src="{{ asset('images/modern-clothing.webp') }}" alt="Vêtements modernes" class="w-full h-full object-cover">
+                <img src="{{ asset('images/modern-clothing.jpg') }}" alt="Vêtements modernes" class="w-full h-full object-cover">
 
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
                     <div class="w-full">

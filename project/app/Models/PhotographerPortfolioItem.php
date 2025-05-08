@@ -17,9 +17,7 @@ class PhotographerPortfolioItem extends Model
         'description'
     ];
 
-    /**
-     * Relation avec le photographe
-     */
+    
     public function photographer()
     {
         return $this->belongsTo(Photographer::class);

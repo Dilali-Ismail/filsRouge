@@ -9,11 +9,7 @@ class MenuItem extends Model
 {
     use HasFactory;
 
-    /**
-     * Les attributs qui sont assignables en masse.
-     *
-     * @var array
-     */
+
     protected $fillable = [
         'service_id',
         'name',
@@ -23,9 +19,7 @@ class MenuItem extends Model
         'category',
     ];
 
-    /**
-     * Récupère le service auquel cet item appartient.
-     */
+   
     public function service()
     {
         return $this->belongsTo(Service::class);

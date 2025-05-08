@@ -94,13 +94,13 @@ public function checkDateAvailability(Request $request, $traiteurId)
 
     $date = $request->date;
 
-    // Vérifie si la date est explicitement marquée comme non disponible
+
     $unavailable = TraiteurAvailability::where('traiteur_id', $traiteurId)
         ->where('date', $date)
         ->where('is_available', false)
         ->exists();
 
-    // Vérifie si la date est déjà réservée
+    
     $reserved = Reservation::where('traiteur_id', $traiteurId)
         ->where('event_date', $date)
         ->where('status', '!=', 'cancelled')
@@ -211,6 +211,32 @@ public function services(Request $request, $traiteurId)
     }
 
     return view('planning.services', compact('traiteur', 'date', 'categories', 'activeCategory', 'services' ,'categoryData'));
+}
+
+public function getAllDatesStatus($traiteurId)
+{
+    // Récupérer les dates indisponibles (explicitement marquées comme non disponibles)
+    $unavailableDatesFromAvailability = TraiteurAvailability::where('traiteur_id', $traiteurId)
+        ->where('is_available', false)
+        ->pluck('date')
+        ->map(function($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        });
+
+    // Récupérer les dates déjà réservées
+    $reservedDates = Reservation::where('traiteur_id', $traiteurId)
+        ->where('status', '!=', 'cancelled')
+        ->pluck('event_date')
+        ->map(function($date) {
+            return Carbon::parse($date)->format('Y-m-d');
+        });
+
+    // Combiner les deux collections
+    $unavailableDates = $unavailableDatesFromAvailability->merge($reservedDates)->unique();
+
+    return response()->json([
+        'unavailableDates' => $unavailableDates
+    ]);
 }
 
 

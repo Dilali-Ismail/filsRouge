@@ -27,7 +27,7 @@ class TraiteurClothingController extends Controller
 
     public function index()
     {
-        $traiteurId = Auth::user()->traiteur->id;
+        $traiteurId = Auth::user()->traiteur->id; 
         $clothingServices = $this->clothingService->getAllClothingServicesByTraiteur($traiteurId);
 
         // Si la requête est AJAX, retourne seulement la partie contenu

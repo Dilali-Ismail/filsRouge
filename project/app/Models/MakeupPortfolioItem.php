@@ -17,9 +17,7 @@ class MakeupPortfolioItem extends Model
         'description'
     ];
 
-    /**
-     * Relation avec le maquillage
-     */
+ 
     public function makeup()
     {
         return $this->belongsTo(Makeup::class);

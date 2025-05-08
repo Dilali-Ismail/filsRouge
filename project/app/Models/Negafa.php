@@ -18,9 +18,7 @@ class Negafa extends Model
         'experience'
     ];
 
-    /**
-     * Relation avec le service
-     */
+    
     public function service()
     {
         return $this->belongsTo(Service::class);

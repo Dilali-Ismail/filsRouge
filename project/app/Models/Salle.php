@@ -19,9 +19,7 @@ class Salle extends Model
         'tables_count'
     ];
 
-    /**
-     * Relation avec le service
-     */
+    
     public function service()
     {
         return $this->belongsTo(Service::class);

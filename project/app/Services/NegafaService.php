@@ -80,26 +80,37 @@ class NegafaService
     }
 
     /**
-     * Met à jour une négafa.
-     */
-    public function updateNegafa($id, array $data)
-    {
-        $negafa = $this->negafaRepository->find($id);
+ * Met à jour une négafa.
+ */
+public function updateNegafa($id, array $data)
+{
+    $negafa = $this->negafaRepository->find($id);
 
-        if (isset($data['photo']) && $data['photo']) {
-            // Supprime l'ancienne photo si elle existe
-            if ($negafa->photo) {
-                Storage::disk('public')->delete($negafa->photo);
-            }
-
-            $data['photo'] = $data['photo']->store('negafas', 'public');
-        } else {
-            // Si pas de nouvelle photo, conserve l'ancienne
-            unset($data['photo']);
+    // Gestion de la suppression de photo existante
+    if (isset($data['remove_photo']) && $data['remove_photo'] == 1) {
+        if ($negafa->photo) {
+            Storage::disk('public')->delete($negafa->photo);
+        }
+        $data['photo'] = null;
+    }
+    // Gestion de l'upload d'une nouvelle photo
+    elseif (isset($data['photo']) && $data['photo']) {
+        // Supprime l'ancienne photo si elle existe
+        if ($negafa->photo) {
+            Storage::disk('public')->delete($negafa->photo);
         }
 
-        return $this->negafaRepository->update($id, $data);
+        $data['photo'] = $data['photo']->store('negafas', 'public');
     }
+
+    // Dans tous les cas, on retire ces clés du tableau pour éviter des erreurs
+    unset($data['remove_photo']);
+    if (!isset($data['photo']) || !$data['photo']) {
+        unset($data['photo']);
+    }
+
+    return $this->negafaRepository->update($id, $data);
+}
 
     /**
      * Supprime une négafa.

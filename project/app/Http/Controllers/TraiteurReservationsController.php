@@ -53,7 +53,7 @@ class TraiteurReservationsController extends Controller
     return view('traiteur.reservations', [
         'reservations' => $reservations,
         'disabledDates' => json_encode($disabledDates),
-        'reservedDates' => $reservedDates // Ajout de cette variable manquante
+        'reservedDates' => $reservedDates 
     ]);
     }
 

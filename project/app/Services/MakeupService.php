@@ -79,27 +79,36 @@ class MakeupService
         return $this->makeupRepository->create($data);
     }
 
-    /**
-     * Met à jour un service de maquillage.
-     */
-    public function updateMakeup($id, array $data)
-    {
-        $makeup = $this->makeupRepository->find($id);
+    
+public function updateMakeup($id, array $data)
+{
+    $makeup = $this->makeupRepository->find($id);
 
-        if (isset($data['photo']) && $data['photo']) {
-            // Supprime l'ancienne photo si elle existe
-            if ($makeup->photo) {
-                Storage::disk('public')->delete($makeup->photo);
-            }
-
-            $data['photo'] = $data['photo']->store('makeups', 'public');
-        } else {
-            // Si pas de nouvelle photo, conserve l'ancienne
-            unset($data['photo']);
+    // Gestion de la suppression de photo existante
+    if (isset($data['remove_photo']) && $data['remove_photo'] == 1) {
+        if ($makeup->photo) {
+            Storage::disk('public')->delete($makeup->photo);
+        }
+        $data['photo'] = null;
+    }
+    // Gestion de l'upload d'une nouvelle photo
+    elseif (isset($data['photo']) && $data['photo']) {
+        // Supprime l'ancienne photo si elle existe
+        if ($makeup->photo) {
+            Storage::disk('public')->delete($makeup->photo);
         }
 
-        return $this->makeupRepository->update($id, $data);
+        $data['photo'] = $data['photo']->store('makeups', 'public');
     }
+
+    // Dans tous les cas, on retire ces clés du tableau pour éviter des erreurs
+    unset($data['remove_photo']);
+    if (!isset($data['photo']) || !$data['photo']) {
+        unset($data['photo']);
+    }
+
+    return $this->makeupRepository->update($id, $data);
+}
 
     /**
      * Supprime un service de maquillage.

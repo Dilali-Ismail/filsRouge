@@ -111,7 +111,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="md:col-span-2">
+                                {{-- <div class="md:col-span-2">
                                     <label for="wedding_date" class="block text-sm font-medium text-[#333333] mb-2">Date prévue du mariage (optionnel)</label>
                                     <input id="wedding_date" type="date" name="wedding_date" value="{{ old('wedding_date') }}"
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]">
@@ -119,7 +119,7 @@
                                     @error('wedding_date')
                                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                     @enderror
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

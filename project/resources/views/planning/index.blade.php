@@ -163,6 +163,14 @@
         background-color: #f3f4f6;
     }
 
+    /* Style pour les jours indisponibles */
+    .day-btn.unavailable {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f3f4f6;
+        text-decoration: line-through;
+    }
+
     /* Animation pour la barre de progression */
     #progressBar {
         transition: width 0.3s ease;
@@ -206,6 +214,7 @@
         }
     }
 </style>
+
 @endsection
 
 @section('content')
@@ -601,309 +610,314 @@
 @endsection
 
 @section('scripts')
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Éléments du DOM pour les modals
-    const infoModal = document.getElementById('infoModal');
-    const closeInfoModal = document.getElementById('closeInfoModal');
-    const infoButtons = document.querySelectorAll('.info-btn');
-    const bookButtons = document.querySelectorAll('.book-btn');
-    const infoModalBookBtn = document.getElementById('infoModalBookBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Éléments du DOM pour les modals
+        const infoModal = document.getElementById('infoModal');
+        const closeInfoModal = document.getElementById('closeInfoModal');
+        const infoButtons = document.querySelectorAll('.info-btn');
+        const bookButtons = document.querySelectorAll('.book-btn');
+        const infoModalBookBtn = document.getElementById('infoModalBookBtn');
 
-    // Éléments du DOM pour le modal de réservation
-    const bookModal = document.getElementById('bookModal');
-    const closeBookModal = document.getElementById('closeBookModal');
-    const progressBar = document.getElementById('progressBar');
-    const yearSelectionStep = document.getElementById('yearSelectionStep');
-    const monthSelectionStep = document.getElementById('monthSelectionStep');
-    const daySelectionStep = document.getElementById('daySelectionStep');
-    const backStepBtn = document.getElementById('backStepBtn');
-    const confirmDateBtn = document.getElementById('confirmDateBtn');
-    const dateAvailabilityMessage = document.getElementById('dateAvailabilityMessage');
-    const availabilityText = document.getElementById('availabilityText');
-    const yearBtnsContainer = yearSelectionStep.querySelector('.grid');
-    const daysGrid = document.getElementById('daysGrid');
+        // Éléments du DOM pour le modal de réservation
+        const bookModal = document.getElementById('bookModal');
+        const closeBookModal = document.getElementById('closeBookModal');
+        const progressBar = document.getElementById('progressBar');
+        const yearSelectionStep = document.getElementById('yearSelectionStep');
+        const monthSelectionStep = document.getElementById('monthSelectionStep');
+        const daySelectionStep = document.getElementById('daySelectionStep');
+        const backStepBtn = document.getElementById('backStepBtn');
+        const confirmDateBtn = document.getElementById('confirmDateBtn');
+        const dateAvailabilityMessage = document.getElementById('dateAvailabilityMessage');
+        const availabilityText = document.getElementById('availabilityText');
+        const yearBtnsContainer = yearSelectionStep.querySelector('.grid');
+        const daysGrid = document.getElementById('daysGrid');
 
-    let currentTraiteurId = null;
-    let selectedYear = null;
-    let selectedMonth = null;
-    let selectedDay = null;
-    let currentStep = 1;
-    let availableDates = [];
+        let currentTraiteurId = null;
+        let selectedYear = null;
+        let selectedMonth = null;
+        let selectedDay = null;
+        let currentStep = 1;
+        let unavailableDates = []; // Pour stocker les dates indisponibles
 
-    // Génération des années (année en cours + 3 ans)
-    function generateYearButtons() {
-        yearBtnsContainer.innerHTML = '';
-        const currentYear = new Date().getFullYear();
+        // Génération des années (année en cours + 3 ans)
+        function generateYearButtons() {
+            yearBtnsContainer.innerHTML = '';
+            const currentYear = new Date().getFullYear();
 
-        for (let i = 0; i < 4; i++) {
-            const year = currentYear + i;
-            const btn = document.createElement('button');
-            btn.classList.add('year-btn', 'p-5', 'border', 'rounded-lg', 'text-lg', 'hover:bg-[#FADADD]', 'hover:border-[#C08081]', 'transition-colors');
-            btn.textContent = year;
-            btn.dataset.year = year;
+            for (let i = 0; i < 4; i++) {
+                const year = currentYear + i;
+                const btn = document.createElement('button');
+                btn.classList.add('year-btn', 'p-5', 'border', 'rounded-lg', 'text-lg', 'hover:bg-[#FADADD]', 'hover:border-[#C08081]', 'transition-colors');
+                btn.textContent = year;
+                btn.dataset.year = year;
 
-            btn.addEventListener('click', function() {
-                // Supprimer la sélection précédente
-                document.querySelectorAll('.year-btn.selected').forEach(el => {
-                    el.classList.remove('selected');
-                });
-
-                // Sélectionner cette année
-                this.classList.add('selected');
-                selectedYear = parseInt(year);
-                goToStep(2);
-            });
-
-            yearBtnsContainer.appendChild(btn);
-        }
-    }
-
-    // Gestion des clics sur les mois
-    const monthButtons = document.querySelectorAll('.month-btn');
-    monthButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Supprimer la sélection précédente
-            document.querySelectorAll('.month-btn.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
-
-            // Sélectionner ce mois
-            this.classList.add('selected');
-            selectedMonth = parseInt(this.dataset.month);
-
-            generateDaysForMonth();
-            goToStep(3);
-        });
-    });
-
-    // Génération du calendrier pour le mois sélectionné
-    function generateDaysForMonth() {
-        daysGrid.innerHTML = '';
-
-        // En-têtes des jours de la semaine
-        const daysOfWeek = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-        daysOfWeek.forEach(day => {
-            const dayHeader = document.createElement('div');
-            dayHeader.classList.add('text-center', 'font-medium', 'text-gray-500', 'mb-2');
-            dayHeader.textContent = day;
-            daysGrid.appendChild(dayHeader);
-        });
-
-        // Déterminer le nombre de jours dans le mois
-        const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-
-        // Déterminer le jour de la semaine du premier jour du mois (0 = dimanche, 1 = lundi, etc.)
-        const firstDay = new Date(selectedYear, selectedMonth - 1, 1).getDay();
-        const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // Ajuster pour commencer par lundi
-
-        // Ajouter des cellules vides pour les jours avant le début du mois
-        for (let i = 0; i < adjustedFirstDay; i++) {
-            const emptyDay = document.createElement('div');
-            daysGrid.appendChild(emptyDay);
-        }
-
-        // Ajouter les jours du mois
-        for (let i = 1; i <= daysInMonth; i++) {
-            const dayBtn = document.createElement('button');
-            dayBtn.classList.add('day-btn', 'h-10', 'w-10', 'rounded-full', 'flex', 'items-center', 'justify-center', 'hover:bg-[#FADADD]', 'transition-colors');
-            dayBtn.textContent = i;
-            dayBtn.dataset.day = i;
-
-            // Vérifier si cette date est disponible
-            const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-            const isAvailable = checkDateAvailability(dateStr);
-
-            if (!isAvailable) {
-                dayBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                dayBtn.disabled = true;
-            } else {
-                dayBtn.addEventListener('click', function() {
+                btn.addEventListener('click', function() {
                     // Supprimer la sélection précédente
-                    document.querySelectorAll('.day-btn.selected').forEach(el => {
+                    document.querySelectorAll('.year-btn.selected').forEach(el => {
                         el.classList.remove('selected');
                     });
 
-                    // Marquer ce jour comme sélectionné
+                    // Sélectionner cette année
                     this.classList.add('selected');
-                    selectedDay = i;
-
-                    // Afficher le message de confirmation
-                    dateAvailabilityMessage.classList.remove('hidden');
-                    availabilityText.textContent = "Cette date est disponible !";
-                    availabilityText.className = "font-semibold text-green-600 text-lg";
-
-                    // Afficher le bouton de confirmation
-                    confirmDateBtn.classList.remove('hidden');
+                    selectedYear = parseInt(year);
+                    goToStep(2);
                 });
+
+                yearBtnsContainer.appendChild(btn);
+            }
+        }
+
+        // Gestion des clics sur les mois
+        const monthButtons = document.querySelectorAll('.month-btn');
+        monthButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Supprimer la sélection précédente
+                document.querySelectorAll('.month-btn.selected').forEach(el => {
+                    el.classList.remove('selected');
+                });
+
+                // Sélectionner ce mois
+                this.classList.add('selected');
+                selectedMonth = parseInt(this.dataset.month);
+
+                generateDaysForMonth();
+                goToStep(3);
+            });
+        });
+
+        // Génération du calendrier pour le mois sélectionné
+        function generateDaysForMonth() {
+            daysGrid.innerHTML = '';
+
+            // En-têtes des jours de la semaine
+            const daysOfWeek = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.classList.add('text-center', 'font-medium', 'text-gray-500', 'mb-2');
+                dayHeader.textContent = day;
+                daysGrid.appendChild(dayHeader);
+            });
+
+            // Déterminer le nombre de jours dans le mois
+            const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+
+            // Déterminer le jour de la semaine du premier jour du mois
+            const firstDay = new Date(selectedYear, selectedMonth - 1, 1).getDay();
+            const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // Ajuster pour commencer par lundi
+
+            // Ajouter des cellules vides pour les jours avant le début du mois
+            for (let i = 0; i < adjustedFirstDay; i++) {
+                const emptyDay = document.createElement('div');
+                daysGrid.appendChild(emptyDay);
             }
 
-            daysGrid.appendChild(dayBtn);
-        }
-    }
+            // Ajouter les jours du mois
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayBtn = document.createElement('button');
+                dayBtn.classList.add('day-btn', 'rounded-full', 'flex', 'items-center', 'justify-center');
+                dayBtn.textContent = i;
+                dayBtn.dataset.day = i;
 
-    // Vérifier si une date est disponible (version simplifiée)
-    function checkDateAvailability(dateStr) {
-        // Uniquement vérifier que la date est dans le futur
-        const currentDate = new Date();
-        const checkDate = new Date(dateStr);
+                // Formater la date pour la comparaison
+                const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
-        return checkDate >= currentDate;
-    }
+                // Vérifier si cette date est dans le passé
+                const isPastDate = new Date(dateStr) < new Date().setHours(0, 0, 0, 0);
 
-    // Navigation entre les étapes
-    function goToStep(step) {
-        currentStep = step;
+                // Vérifier si cette date est indisponible
+                const isUnavailable = unavailableDates.includes(dateStr);
 
-        // Masquer toutes les étapes
-        yearSelectionStep.classList.add('hidden');
-        monthSelectionStep.classList.add('hidden');
-        daySelectionStep.classList.add('hidden');
-
-        // Afficher l'étape appropriée
-        if (step === 1) {
-            yearSelectionStep.classList.remove('hidden');
-            backStepBtn.classList.add('hidden');
-            progressBar.style.width = '33%';
-        } else if (step === 2) {
-            monthSelectionStep.classList.remove('hidden');
-            backStepBtn.classList.remove('hidden');
-            progressBar.style.width = '66%';
-        } else if (step === 3) {
-            daySelectionStep.classList.remove('hidden');
-            backStepBtn.classList.remove('hidden');
-            progressBar.style.width = '100%';
-        }
-
-        // Masquer le bouton de confirmation et le message lors du changement d'étape
-        confirmDateBtn.classList.add('hidden');
-        dateAvailabilityMessage.classList.add('hidden');
-    }
-
-    // Fonction pour ouvrir le modal d'information du traiteur
-    function openInfoModal(traiteurId) {
-        currentTraiteurId = traiteurId;
-
-        // Récupérer les détails du traiteur via AJAX
-        fetch(`/planning/traiteur/${traiteurId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Remplir le modal avec les détails
-                document.getElementById('traiteurName').textContent = data.traiteur.manager_name;
-                document.getElementById('traiteurCity').textContent = data.traiteur.city;
-                document.getElementById('traiteurEmail').textContent = data.traiteur.user.email;
-                document.getElementById('traiteurPhone').textContent = data.traiteur.phone_number;
-
-                // Afficher le logo si disponible
-                const logoContainer = document.getElementById('traiteurLogo');
-                if (data.traiteur.logo) {
-                    logoContainer.innerHTML = `<img src="/storage/${data.traiteur.logo}" alt="${data.traiteur.manager_name}" class="w-24 h-24 rounded-full object-cover">`;
+                // Appliquer le style et les comportements appropriés
+                if (isPastDate || isUnavailable) {
+                    // Date indisponible - appliquer un style grisé et désactiver
+                    dayBtn.classList.add('unavailable');
+                    dayBtn.disabled = true;
+                    dayBtn.title = "Date indisponible";
                 } else {
-                    logoContainer.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    `;
+                    // Date disponible
+                    dayBtn.classList.add('hover:bg-[#FADADD]', 'transition-colors');
+
+                    // Ajouter l'événement de clic
+                    dayBtn.addEventListener('click', function() {
+                        // Supprimer la sélection précédente
+                        document.querySelectorAll('.day-btn.selected').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+
+                        // Marquer ce jour comme sélectionné
+                        this.classList.add('selected');
+                        selectedDay = i;
+
+                        // Afficher le message de confirmation
+                        dateAvailabilityMessage.classList.remove('hidden');
+                        availabilityText.textContent = "Cette date est disponible !";
+                        availabilityText.className = "font-semibold text-green-600 text-lg";
+
+                        // Afficher le bouton de confirmation
+                        confirmDateBtn.classList.remove('hidden');
+                    });
                 }
 
-                infoModal.classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération des détails du traiteur:', error);
-            });
-    }
-
-    // Fonction pour ouvrir le modal de réservation
-    function openBookModal(traiteurId) {
-        currentTraiteurId = traiteurId;
-
-        // Récupérer les dates disponibles via AJAX (optionnel)
-        fetch(`/planning/traiteur/${traiteurId}/available-dates`)
-            .then(response => response.json())
-            .then(data => {
-                availableDates = data.availableDates;
-
-                // Réinitialiser et afficher le modal
-                resetModalState();
-                generateYearButtons();
-                goToStep(1);
-                bookModal.classList.remove('hidden');
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération des dates disponibles:', error);
-
-                // En cas d'erreur, on continue quand même mais sans filtrer les dates
-                resetModalState();
-                generateYearButtons();
-                goToStep(1);
-                bookModal.classList.remove('hidden');
-            });
-    }
-
-    // Réinitialiser l'état du modal
-    function resetModalState() {
-        selectedYear = null;
-        selectedMonth = null;
-        selectedDay = null;
-        currentStep = 1;
-
-        // Réinitialiser les sélections
-        document.querySelectorAll('.year-btn.selected, .month-btn.selected, .day-btn.selected').forEach(el => {
-            el.classList.remove('selected');
-        });
-
-        confirmDateBtn.classList.add('hidden');
-        dateAvailabilityMessage.classList.add('hidden');
-    }
-
-    // Gérer le clic sur le bouton Infos
-    infoButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const traiteurId = this.getAttribute('data-traiteur-id');
-            openInfoModal(traiteurId);
-        });
-    });
-
-    // Gérer le clic sur le bouton Réserver
-    bookButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const traiteurId = this.getAttribute('data-traiteur-id');
-            openBookModal(traiteurId);
-        });
-    });
-
-    // Gérer le clic sur le bouton Réserver dans le modal d'information
-    infoModalBookBtn.addEventListener('click', function() {
-        infoModal.classList.add('hidden');
-        openBookModal(currentTraiteurId);
-    });
-
-    // Gérer le clic sur le bouton Retour
-    backStepBtn.addEventListener('click', function() {
-        if (currentStep > 1) {
-            goToStep(currentStep - 1);
+                daysGrid.appendChild(dayBtn);
+            }
         }
-    });
 
+        // Navigation entre les étapes
+        function goToStep(step) {
+            currentStep = step;
 
-    confirmDateBtn.addEventListener('click', function() {
-        if (selectedYear && selectedMonth && selectedDay) {
-            const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
-            // Rediriger vers la page des services du traiteur avec la date sélectionnée
-            window.location.href = `/traiteur/${currentTraiteurId}/services?date=${dateStr}`;
+            // Masquer toutes les étapes
+            yearSelectionStep.classList.add('hidden');
+            monthSelectionStep.classList.add('hidden');
+            daySelectionStep.classList.add('hidden');
+
+            // Afficher l'étape appropriée
+            if (step === 1) {
+                yearSelectionStep.classList.remove('hidden');
+                backStepBtn.classList.add('hidden');
+                progressBar.style.width = '33%';
+            } else if (step === 2) {
+                monthSelectionStep.classList.remove('hidden');
+                backStepBtn.classList.remove('hidden');
+                progressBar.style.width = '66%';
+            } else if (step === 3) {
+                daySelectionStep.classList.remove('hidden');
+                backStepBtn.classList.remove('hidden');
+                progressBar.style.width = '100%';
+            }
+
+            // Masquer le bouton de confirmation et le message lors du changement d'étape
+            confirmDateBtn.classList.add('hidden');
+            dateAvailabilityMessage.classList.add('hidden');
         }
+
+        // Fonction pour ouvrir le modal d'information du traiteur
+        function openInfoModal(traiteurId) {
+            currentTraiteurId = traiteurId;
+
+            // Récupérer les détails du traiteur via AJAX
+            fetch(`/planning/traiteur/${traiteurId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Remplir le modal avec les détails
+                    document.getElementById('traiteurName').textContent = data.traiteur.manager_name;
+                    document.getElementById('traiteurCity').textContent = data.traiteur.city;
+                    document.getElementById('traiteurEmail').textContent = data.traiteur.user.email;
+                    document.getElementById('traiteurPhone').textContent = data.traiteur.phone_number;
+
+                    // Afficher le logo si disponible
+                    const logoContainer = document.getElementById('traiteurLogo');
+                    if (data.traiteur.logo) {
+                        logoContainer.innerHTML = `<img src="/storage/${data.traiteur.logo}" alt="${data.traiteur.manager_name}" class="w-24 h-24 rounded-full object-cover">`;
+                    } else {
+                        logoContainer.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        `;
+                    }
+
+                    infoModal.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des détails du traiteur:', error);
+                });
+        }
+
+        // Fonction pour ouvrir le modal de réservation
+        function openBookModal(traiteurId) {
+            currentTraiteurId = traiteurId;
+
+            // Récupérer les dates indisponibles via AJAX
+            fetch(`/planning/traiteur/${traiteurId}/all-dates-status`)
+                .then(response => response.json())
+                .then(data => {
+                    unavailableDates = data.unavailableDates || [];
+                    console.log("Dates indisponibles récupérées:", unavailableDates);
+
+                    // Réinitialiser et afficher le modal
+                    resetModalState();
+                    generateYearButtons();
+                    goToStep(1);
+                    bookModal.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des dates indisponibles:', error);
+
+                    // En cas d'erreur, on continue quand même mais sans filtrer les dates
+                    unavailableDates = [];
+                    resetModalState();
+                    generateYearButtons();
+                    goToStep(1);
+                    bookModal.classList.remove('hidden');
+                });
+        }
+
+        // Réinitialiser l'état du modal
+        function resetModalState() {
+            selectedYear = null;
+            selectedMonth = null;
+            selectedDay = null;
+            currentStep = 1;
+
+            // Réinitialiser les sélections
+            document.querySelectorAll('.year-btn.selected, .month-btn.selected, .day-btn.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            confirmDateBtn.classList.add('hidden');
+            dateAvailabilityMessage.classList.add('hidden');
+        }
+
+        // Gérer le clic sur le bouton Infos
+        infoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const traiteurId = this.getAttribute('data-traiteur-id');
+                openInfoModal(traiteurId);
+            });
+        });
+
+        // Gérer le clic sur le bouton Réserver
+        bookButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const traiteurId = this.getAttribute('data-traiteur-id');
+                openBookModal(traiteurId);
+            });
+        });
+
+        // Gérer le clic sur le bouton Réserver dans le modal d'information
+        infoModalBookBtn.addEventListener('click', function() {
+            infoModal.classList.add('hidden');
+            openBookModal(currentTraiteurId);
+        });
+
+        // Gérer le clic sur le bouton Retour
+        backStepBtn.addEventListener('click', function() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        });
+
+        // Gérer le clic sur le bouton Confirmer
+        confirmDateBtn.addEventListener('click', function() {
+            if (selectedYear && selectedMonth && selectedDay) {
+                const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+                // Rediriger vers la page des services du traiteur avec la date sélectionnée
+                window.location.href = `/traiteur/${currentTraiteurId}/services?date=${dateStr}`;
+            }
+        });
+
+        // Gérer le clic sur le bouton fermer du modal info
+        closeInfoModal.addEventListener('click', function() {
+            infoModal.classList.add('hidden');
+        });
+
+        // Gérer le clic sur le bouton fermer du modal réservation
+        closeBookModal.addEventListener('click', function() {
+            bookModal.classList.add('hidden');
+        });
     });
-
-
-    closeInfoModal.addEventListener('click', function() {
-        infoModal.classList.add('hidden');
-    });
-
-
-    closeBookModal.addEventListener('click', function() {
-        bookModal.classList.add('hidden');
-    });
-
-});
-</script>
+    </script>
 @endsection

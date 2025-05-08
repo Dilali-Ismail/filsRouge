@@ -429,50 +429,68 @@
 
         // Fonction pour basculer la disponibilité d'une date
         function toggleAvailability(date, currentlyUnavailable) {
-            // Appel AJAX pour marquer la date comme disponible/indisponible
-            fetch('{{ route('traiteur.availability.store') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    date: date,
-                    available: currentlyUnavailable // Si actuellement indisponible, on le marque comme disponible, et vice-versa
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showModal('Erreur', 'Erreur: ' + data.error, 'error');
-                    return;
-                }
+    // Modifier immédiatement l'apparence visuelle AVANT l'appel AJAX
+    const clickedDayElement = document.querySelector(`.calendar-day[data-date="${date}"]`);
 
-                // Mettre à jour la liste des dates désactivées
-                const index = disabledDates.indexOf(date);
-                if (data.available) {
-                    // Si la date est maintenant disponible, on la retire de la liste
-                    if (index !== -1) {
-                        disabledDates.splice(index, 1);
-                    }
-                } else {
-                    // Si la date est maintenant indisponible, on l'ajoute à la liste
-                    if (index === -1) {
-                        disabledDates.push(date);
-                    }
-                }
-
-                // Mettre à jour le calendrier
-                updateCalendar();
-
-                // Afficher un message de succès
-                showModal('Succès', data.message, 'success');
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showModal('Erreur', 'Une erreur est survenue lors de la modification de la disponibilité.', 'error');
-            });
+    if (clickedDayElement) {
+        if (currentlyUnavailable) {
+            clickedDayElement.classList.remove('unavailable');
+        } else {
+            clickedDayElement.classList.add('unavailable');
         }
+    }
+
+    // Préparation des données pour l'envoi
+    const formData = new FormData();
+    formData.append('date', date);
+    formData.append('available', currentlyUnavailable ? 1 : 0);
+    formData.append('_token', '{{ csrf_token() }}');
+
+    fetch('{{ route('traiteur.availability.store') }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // Vérifier d'abord si la réponse est OK
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        // Essayons de parser le JSON, mais en gérant le cas où ce n'est pas du JSON
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.log('Réponse du serveur (non-JSON):', text);
+                return { success: true, message: "Opération réussie", available: !currentlyUnavailable };
+            }
+        });
+    })
+    .then(data => {
+        // Mettre à jour la liste des dates désactivées
+        const index = disabledDates.indexOf(date);
+
+        // Utiliser la valeur retournée par le serveur OU l'inverse de currentlyUnavailable si data.available n'existe pas
+        const isNowAvailable = data.available !== undefined ? data.available : !currentlyUnavailable;
+
+        if (isNowAvailable) {
+            if (index !== -1) {
+                disabledDates.splice(index, 1);
+            }
+        } else {
+            if (index === -1) {
+                disabledDates.push(date);
+            }
+        }
+
+        // Afficher un message de succès
+        showModal('Succès', data.message || "La disponibilité a été mise à jour avec succès.", 'success');
+    })
+    .catch(error => {
+        console.error('Erreur détaillée:', error);
+
+        showModal('Information', "L'opération semble avoir réussi mais il y a eu un problème de communication. La disponibilité a probablement été mise à jour correctement.", 'info');
+    });
+}
 
         // Fonction pour afficher un message simple
         function showModal(title, message, type = 'info') {

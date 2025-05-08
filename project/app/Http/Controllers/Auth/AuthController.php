@@ -55,6 +55,7 @@ class AuthController extends Controller
                 'city' => $request->city,
             ]);
         } elseif ($role->name === 'traiteur') {
+            
             $request->validate([
                 'manager_name' => 'required|string|max:255',
                 'registration_number' => 'required|string|max:255|unique:traiteurs',
@@ -62,7 +63,7 @@ class AuthController extends Controller
                 'city' => 'required|string|max:255',
             ]);
 
-           
+
 
             Traiteur::create([
                 'user_id' => $user->id,
@@ -75,12 +76,10 @@ class AuthController extends Controller
         }
         Auth::login($user);
 
-        // Envoie l'événement pour la vérification d'email
+
         event(new Registered($user));
 
 
-
-        // Redirection vers la page de vérification d'email
         return redirect()->route('verification.notice')
             ->with('success', 'Votre compte a été créé avec succès. Veuillez vérifier votre adresse email.');
     }

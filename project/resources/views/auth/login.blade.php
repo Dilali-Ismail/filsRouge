@@ -7,7 +7,7 @@
     <div class="container mx-auto px-4">
         <div class="flex flex-col md:flex-row max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             <!-- Image côté gauche -->
-            <div class="md:w-1/2 bg-cover bg-center h-64 md:h-auto" style="background-image: url('{{ asset('images/login-image.jpg') }}')">
+            <div class="md:w-1/2 bg-cover bg-center h-64 md:h-auto" style="background-image: url('{{ asset('images/login-image.webp') }}')">
                 <!-- L'image est définie en CSS comme arrière-plan pour faciliter sa modification -->
             </div>
 

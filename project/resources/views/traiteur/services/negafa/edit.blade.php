@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier un maquilleur')
+@section('title', 'Modifier une négafa')
 
 @section('content')
 <div class="min-h-screen bg-[#FAF9F6] py-12">
     <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto">
             <div class="flex items-center mb-6">
-                <a href="{{ route('traiteur.services.maquillage.index') }}" class="mr-4 text-gray-600 hover:text-[#C08081]">
+                <a href="{{ route('traiteur.services.negafa.index') }}" class="mr-4 text-gray-600 hover:text-[#C08081]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </a>
-                <h1 class="text-3xl font-bold text-[#333333] font-display">Modifier un maquilleur</h1>
+                <h1 class="text-3xl font-bold text-[#333333] font-display">Modifier une négafa</h1>
             </div>
 
             @if(session('success'))
@@ -38,19 +38,19 @@
             @endif
 
             <div class="bg-white rounded-xl shadow-md p-8">
-                <form action="{{ route('traiteur.services.maquillage.update', $makeup->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('traiteur.services.negafa.update', $negafa->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Nom du maquilleur -->
+                        <!-- Nom de la négafa -->
                         <div class="md:col-span-2">
                             <label for="name" class="block text-sm font-medium text-[#333333] mb-2">
                                 Nom <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="name" id="name" value="{{ old('name', $makeup->name) }}" required
+                            <input type="text" name="name" id="name" value="{{ old('name', $negafa->name) }}" required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
-                                placeholder="Nom du maquilleur">
+                                placeholder="Nom de la négafa">
 
                             @error('name')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -62,9 +62,9 @@
                             <label for="price" class="block text-sm font-medium text-[#333333] mb-2">
                                 Prix (DH) <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="price" id="price" value="{{ old('price', $makeup->price) }}" required min="0" step="0.01"
+                            <input type="number" name="price" id="price" value="{{ old('price', $negafa->price) }}" required min="0" step="0.01"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
-                                placeholder="Ex: 800.00">
+                                placeholder="Ex: 2500.00">
 
                             @error('price')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -76,7 +76,7 @@
                             <label for="experience" class="block text-sm font-medium text-[#333333] mb-2">
                                 Expérience
                             </label>
-                            <input type="text" name="experience" id="experience" value="{{ old('experience', $makeup->experience) }}"
+                            <input type="text" name="experience" id="experience" value="{{ old('experience', $negafa->experience) }}"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
                                 placeholder="Ex: 5 ans">
 
@@ -85,17 +85,17 @@
                             @enderror
                         </div>
 
-                        <!-- Photo du maquilleur -->
+                        <!-- Photo de la négafa -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-[#333333] mb-2">
                                 Photo
                             </label>
 
-                            @if($makeup->photo)
+                            @if($negafa->photo)
                                 <div class="mb-3">
                                     <p class="text-sm text-gray-500 mb-2">Image actuelle :</p>
                                     <div class="relative inline-block">
-                                        <img src="{{ asset('storage/' . $makeup->photo) }}" alt="{{ $makeup->name }}" class="h-40 w-auto rounded-md border border-gray-200">
+                                        <img src="{{ asset('storage/' . $negafa->photo) }}" alt="{{ $negafa->name }}" class="h-40 w-auto rounded-md border border-gray-200">
                                         <div class="absolute top-0 right-0 mt-2 mr-2">
                                             <label class="cursor-pointer bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors" title="Supprimer l'image">
                                                 <input type="checkbox" name="remove_photo" id="remove_photo" value="1" class="hidden">
@@ -116,7 +116,7 @@
                                     </svg>
                                     <div class="flex text-sm text-gray-600">
                                         <label for="photo" class="relative cursor-pointer bg-white rounded-md font-medium text-[#C08081] hover:text-[#FADADD] focus-within:outline-none">
-                                            <span>{{ $makeup->photo ? 'Changer l\'image' : 'Télécharger une image' }}</span>
+                                            <span>{{ $negafa->photo ? 'Changer l\'image' : 'Télécharger une image' }}</span>
                                             <input id="photo" name="photo" type="file" class="sr-only" accept="image/*" onchange="showPreview(this)">
                                         </label>
                                         <p class="pl-1">ou glisser-déposer</p>
@@ -141,7 +141,7 @@
                             </label>
                             <textarea name="description" id="description" rows="4"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FADADD] focus:border-[#FADADD]"
-                                placeholder="Décrivez ce maquilleur, ses compétences et services...">{{ old('description', $makeup->description) }}</textarea>
+                                placeholder="Décrivez cette négafa, ses compétences et services...">{{ old('description', $negafa->description) }}</textarea>
 
                             @error('description')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -150,7 +150,7 @@
                     </div>
 
                     <div class="flex justify-between mt-8">
-                        <a href="{{ route('traiteur.services.maquillage.show', $makeup->id) }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-300 shadow-md">
+                        <a href="{{ route('traiteur.services.negafa.show', $negafa->id) }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-300 shadow-md">
                             Annuler
                         </a>
                         <button type="submit" class="px-6 py-3 bg-[#FADADD] hover:bg-[#C08081] text-[#333333] hover:text-white rounded-lg transition duration-300 shadow-md">
